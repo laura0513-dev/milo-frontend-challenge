@@ -17,7 +17,7 @@ import {
   Stack
 } from '@mui/material'
 
-export const Clients = () => {
+const Clients = () => {
   const clients = MOCK_USERS.filter(u => u.role === 'client')
 
   return (
@@ -104,3 +104,5 @@ export const Clients = () => {
     </Box>
   )
 }
+
+export default Clients;

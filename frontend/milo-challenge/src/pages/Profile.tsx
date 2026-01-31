@@ -13,7 +13,7 @@ import {
   InputAdornment
 } from '@mui/material'
 
-export const Profile = () => {
+const Profile = () => {
   const { user } = useAuth()
 
   if (!user) return null
@@ -132,3 +132,5 @@ export const Profile = () => {
     </Box>
   )
 }
+
+export default Profile;

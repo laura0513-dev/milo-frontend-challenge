@@ -1,22 +1,20 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import App from './App'
+import App from './App.tsx'
 import CssBaseline from '@mui/material/CssBaseline'
 import { createTheme, ThemeProvider } from '@mui/material'
-import { AuthProvider } from './context/AuthContext.tsx'
 
-// Create a theme instance.
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#f97316', // Orange-500 from Tailwind
+      main: '#f97316',
       contrastText: '#fff',
     },
     secondary: {
-      main: '#3b82f6', // Blue-500
+      main: '#3b82f6',
     },
     background: {
-      default: '#f9fafb', // Gray-50
+      default: '#f9fafb',
       paper: '#ffffff',
     },
   },
@@ -57,10 +55,8 @@ const root = ReactDOM.createRoot(document.getElementById('root'))
 root.render(
   <React.StrictMode>
     <ThemeProvider theme={theme}>
-    <CssBaseline />
-      <AuthProvider>
-        <App />
-      </AuthProvider>
+      <CssBaseline />
+      <App />
     </ThemeProvider>
   </React.StrictMode>
 )

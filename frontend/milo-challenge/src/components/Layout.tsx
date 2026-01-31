@@ -1,15 +1,6 @@
-import React, { useState } from "react";
-import { useAuth } from "../context/AuthContext.tsx";
-import {
-  Dashboard,
-  Inventory,
-  People,
-  Inventory2,
-  Logout,
-  Menu as MenuIcon,
-  Person,
-  ShoppingBag,
-} from "@mui/icons-material";
+import React, { useState, useMemo } from "react"
+import { useAuth } from "../context/AuthContext.tsx"
+import { Logout, Menu as MenuIcon } from "@mui/icons-material"
 import {
   Box,
   Drawer,
@@ -25,52 +16,31 @@ import {
   Avatar,
   useMediaQuery,
   useTheme,
-} from "@mui/material";
+} from "@mui/material"
+import { getNavLinksByRole } from "../constants/navigation.ts"
 
 interface LayoutProps {
-  children: React.ReactNode;
-  activePage: string;
-  onNavigate: (page: string) => void;
+  children: React.ReactNode
 }
 
-const drawerWidth = 280;
+const drawerWidth = 280
 
-export const Layout = ({
-  children,
-  activePage,
-  onNavigate,
-}: LayoutProps) => {
-  const { user, logout } = useAuth();
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
-  const [mobileOpen, setMobileOpen] = useState(false);
+export const Layout: React.FC<LayoutProps> = ({ children }) => {
+  const { user, logout } = useAuth()
+  const theme = useTheme()
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"))
+  const [mobileOpen, setMobileOpen] = useState(false)
 
-  if (!user) return <>{children}</>;
+  // Filtra los links según el rol del usuario de forma eficiente
+  const links = useMemo(() => {
+    return user ? getNavLinksByRole(user.role) : []
+  }, [user?.role])
 
-  const adminLinks = [
-    {
-      id: "dashboard-home",
-      label: "Dashboard",
-      icon: Dashboard,
-    },
-    { id: "orders", label: "Órdenes", icon: Inventory },
-    { id: "clients", label: "Clientes", icon: People },
-    { id: "lockers", label: "Lockers", icon: Inventory2 },
-  ];
-
-  const clientLinks = [
-    { id: "dashboard-home", label: "Inicio", icon: Dashboard },
-    { id: "orders", label: "Mis Pedidos", icon: ShoppingBag },
-    { id: "lockers", label: "Ver Lockers", icon: Inventory2 },
-    { id: "profile", label: "Mi Perfil", icon: Person },
-  ];
-
-  const links =
-    user.role === "admin" ? adminLinks : clientLinks;
+  if (!user) return <>{children}</>
 
   const handleDrawerToggle = () => {
-    setMobileOpen(!mobileOpen);
-  };
+    setMobileOpen(!mobileOpen)
+  }
 
   const drawerContent = (
     <Box
@@ -116,46 +86,36 @@ export const Layout = ({
       </Box>
 
       <List sx={{ flexGrow: 1 }}>
-        {links.map((link) => (
-          <ListItem key={link.id} disablePadding sx={{ mb: 1 }}>
-            <ListItemButton
-              selected={activePage === link.id}
-              onClick={() => {
-                onNavigate(link.id);
-                if (isMobile) setMobileOpen(false);
-              }}
-              sx={{
-                borderRadius: 3,
-                "&.Mui-selected": {
-                  bgcolor: "primary.main",
-                  color: "primary.contrastText",
-                  "&:hover": {
-                    bgcolor: "primary.dark",
-                  },
-                  "& .MuiListItemIcon-root": {
-                    color: "inherit",
-                  },
-                },
-              }}
-            >
-              <ListItemIcon
+        {links.map((link) => {
+          const Icon = link.icon
+          return (
+            <ListItem key={link.id} disablePadding sx={{ mb: 1 }}>
+              <ListItemButton
+                href={link.path}
                 sx={{
-                  minWidth: 40,
-                  color:
-                    activePage === link.id
-                      ? "inherit"
-                      : "text.secondary",
+                  borderRadius: 3,
+                  textDecoration: 'none',
+                  "&:hover": {
+                    bgcolor: "action.hover",
+                  },
                 }}
               >
-                <link.icon />
-              </ListItemIcon>
-              <ListItemText
-                primary={link.label}
-                primaryTypographyProps={{ fontWeight: 500 }}
-              />
-            </ListItemButton>
-          </ListItem>
-        ))}
+                <ListItemIcon
+                  sx={{
+                    minWidth: 40,
+                    color: "text.secondary",
+                  }}
+                >
+                  <Icon />
+                </ListItemIcon>
+                <ListItemText
+                  primary={link.label}
+                  primaryTypographyProps={{ fontWeight: 500 }}
+                />
+              </ListItemButton>
+            </ListItem>
+          )
+        })}
       </List>
 
       <Box sx={{ pt: 2, borderTop: 1, borderColor: "divider" }}>
@@ -216,7 +176,7 @@ export const Layout = ({
         </ListItemButton>
       </Box>
     </Box>
-  );
+  )
 
   return (
     <Box sx={{ display: "flex" }}>
@@ -310,5 +270,5 @@ export const Layout = ({
         </Box>
       </Box>
     </Box>
-  );
-};
+  )
+}

@@ -36,7 +36,7 @@ const StatusBadge = ({ status }: { status: Order['status'] }) => {
   )
 }
 
-export const Orders = () => {
+const Orders = () => {
   const { user } = useAuth()
   
   if (!user) return null
@@ -155,3 +155,5 @@ export const Orders = () => {
     </Box>
   )
 }
+
+export default Orders;

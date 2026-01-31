@@ -1,51 +1,77 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
-import { User } from '../types';
-import { MOCK_USERS } from '../data/mockData.ts';
+import React, { createContext, useContext, useState, ReactNode, useCallback, useEffect } from 'react'
+import { User } from '../types'
+import { authService } from '../services/authService.ts'
+import { UserRole } from '../constants/enums.ts'
 
 interface AuthContextType {
-  user: User | null;
-  login: (email: string, role: 'admin' | 'client') => void;
-  logout: () => void;
-  isAuthenticated: boolean;
+  user: User | null
+  login: (email: string, role: UserRole) => Promise<void>
+  logout: () => void
+  isAuthenticated: boolean
+  isLoading: boolean
+  error: string | null
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
-  const login = (email: string, role: 'admin' | 'client') => {
-    // Mock login logic
-    const mockUser = MOCK_USERS.find(u => u.role === role);
-    if (mockUser) {
-      setUser(mockUser);
-    } else {
-      // Fallback if not found in mock data
-      setUser({
-        id: 'new-user',
-        name: role === 'admin' ? 'Admin User' : 'Client User',
-        email,
-        role,
-        avatarUrl: 'https://via.placeholder.com/150'
-      });
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user')
+    if (storedUser) {
+      try {
+        setUser(JSON.parse(storedUser))
+      } catch (err) {
+        localStorage.removeItem('user')
+      }
     }
-  };
+  }, [])
 
-  const logout = () => {
-    setUser(null);
-  };
+  const login = useCallback(async (email: string, role: UserRole) => {
+    setIsLoading(true)
+    setError(null)
+    try {
+      const loggedUser = await authService.login(email, role)
+      if (loggedUser) {
+        setUser(loggedUser)
+        localStorage.setItem('user', JSON.stringify(loggedUser))
+      } else {
+        throw new Error('Login fallido')
+      }
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Error desconocido'
+      setError(errorMessage)
+      throw err
+    } finally {
+      setIsLoading(false)
+    }
+  }, [])
 
-  return (
-    <AuthContext.Provider value={{ user, login, logout, isAuthenticated: !!user }}>
-      {children}
-    </AuthContext.Provider>
-  );
-};
+  const logout = useCallback(() => {
+    setUser(null)
+    setError(null)
+    localStorage.removeItem('user')
+  }, [])
+
+  const value: AuthContextType = {
+    user,
+    login,
+    logout,
+    isAuthenticated: !!user,
+    isLoading,
+    error,
+  }
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
+}
 
 export const useAuth = () => {
-  const context = useContext(AuthContext);
+  const context = useContext(AuthContext)
   if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error('useAuth debe ser usado dentro de un AuthProvider')
   }
-  return context;
-};
+  return context
+}

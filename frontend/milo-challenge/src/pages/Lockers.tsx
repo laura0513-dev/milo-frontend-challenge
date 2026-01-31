@@ -14,7 +14,7 @@ import {
   Chip 
 } from '@mui/material'
 
-export const Lockers = () => {
+const Lockers = () => {
   const { user } = useAuth()
 
   if (!user) return null
@@ -89,3 +89,5 @@ export const Lockers = () => {
     </Box>
   )
 }
+
+export default Lockers;
