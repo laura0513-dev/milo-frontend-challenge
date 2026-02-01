@@ -34,13 +34,15 @@ export const useAsync = <T,>(
       setState({ data: null, loading: false, error: err })
       options?.onError?.(err)
     }
-  }, [asyncFunction, options])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   useEffect(() => {
     if (immediate) {
       execute()
     }
-  }, [execute, immediate])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   return { ...state, execute }
 }

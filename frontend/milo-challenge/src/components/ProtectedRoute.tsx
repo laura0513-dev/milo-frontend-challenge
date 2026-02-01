@@ -1,5 +1,5 @@
-import React from 'react'
-import { Navigate } from 'react-router-dom'
+import React, { useEffect } from 'react'
+import { Navigate, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext.tsx'
 import { UserRole } from '../constants/enums.ts'
 import { Box, CircularProgress } from '@mui/material'
@@ -14,6 +14,14 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   requiredRoles,
 }) => {
   const { isAuthenticated, user, isInitialized } = useAuth()
+  const navigate = useNavigate()
+
+  // Si tiene roles requeridos y no coinciden, usar useEffect para navegar
+  useEffect(() => {
+    if (isInitialized && isAuthenticated && requiredRoles && user && !requiredRoles.includes(user.role)) {
+      navigate('/dashboard', { replace: true })
+    }
+  }, []) // Solo ejecutar una vez al montar el componente
 
   // Si aún se está inicializando (la primera vez), mostrar loading
   if (!isInitialized) {
@@ -29,9 +37,13 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     return <Navigate to="/login" replace />
   }
 
-  // Si tiene roles requeridos y no coinciden, redirigir a dashboard
+  // Si tiene roles requeridos y no coinciden, mostrar loading mientras se redirige
   if (requiredRoles && user && !requiredRoles.includes(user.role)) {
-    return <Navigate to="/dashboard" replace />
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <CircularProgress />
+      </Box>
+    )
   }
 
   // Si todo está bien, renderizar el contenido

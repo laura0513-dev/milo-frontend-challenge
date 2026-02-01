@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Navigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext.tsx'
 import { ROUTES } from '../constants/routes.ts'
 import { UserRole } from '../constants/enums.ts'
@@ -20,10 +20,15 @@ import {
 } from '@mui/material'
 
 const Login: React.FC = () => {
-  const { login, isLoading, error } = useAuth()
+  const { login, isLoading, error, isAuthenticated } = useAuth()
   const navigate = useNavigate()
   const [email, setEmail] = useState('')
   const [role, setRole] = useState<UserRole>(UserRole.CLIENT)
+
+  // Si ya está autenticado, redirigir al dashboard
+  if (isAuthenticated) {
+    return <Navigate to={ROUTES.DASHBOARD} replace />
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
