@@ -14,6 +14,7 @@ import {
   Grid,
   InputAdornment
 } from '@mui/material'
+import { profileStyles } from './Profile.styles.ts'
 
 const Profile = () => {
   const { user } = useAuth()
@@ -26,39 +27,23 @@ const Profile = () => {
   }
 
   return (
-    <Box sx={{ maxWidth: 'sm', mx: 'auto', display: 'flex', flexDirection: 'column', gap: 3 }}>
-      <Typography variant="h5" fontWeight="bold">Mi Perfil</Typography>
+    <Box sx={profileStyles.container}>
+      <Typography variant="h5" sx={profileStyles.title}>Mi Perfil</Typography>
 
-      <Paper sx={{ overflow: 'hidden', borderRadius: 4, border: '1px solid', borderColor: 'divider', boxShadow: 1 }}>
+      <Paper sx={profileStyles.paper}>
         {/* Header/Cover */}
-        <Box 
-          sx={{ 
-            height: 128, 
-            background: 'linear-gradient(to right, #fb923c, #ef4444)' // orange-400 to red-500
-          }}
-        />
+        <Box sx={profileStyles.coverHeader} />
         
-        <Box sx={{ px: 3, pb: 4 }}>
-          <Box sx={{ position: 'relative', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', mt: -6, mb: 3 }}>
-            <Box sx={{ position: 'relative' }}>
+        <Box sx={profileStyles.paperContent}>
+          <Box sx={profileStyles.avatarContainer}>
+            <Box sx={profileStyles.avatarWrapper}>
                <Avatar 
                  src={user.avatarUrl} 
                  alt="Profile" 
-                 sx={{ width: 96, height: 96, border: '4px solid white', bgcolor: 'white' }}
+                 sx={profileStyles.avatar}
                />
-               <IconButton 
-                 sx={{ 
-                   position: 'absolute', 
-                   bottom: 0, 
-                   right: 0, 
-                   bgcolor: 'grey.900', 
-                   color: 'white', 
-                   border: '2px solid white', 
-                   p: 0.5,
-                   '&:hover': { bgcolor: 'grey.800' } 
-                 }}
-               >
-                 <CameraAlt sx={{ fontSize: 16 }} />
+               <IconButton sx={profileStyles.cameraButton}>
+                 <CameraAlt sx={profileStyles.cameraIcon} />
                </IconButton>
             </Box>
           </Box>
@@ -83,11 +68,11 @@ const Profile = () => {
                        readOnly: true,
                        startAdornment: (
                          <InputAdornment position="start">
-                           <Email sx={{ color: 'text.secondary', mr: 1 }} />
+                           <Email sx={profileStyles.inputIcon} />
                          </InputAdornment>
                        ),
                      }}
-                     variant="filled" // to show it's read-only visually distinct
+                     variant="filled"
                    />
                 </Grid>
 
@@ -100,7 +85,7 @@ const Profile = () => {
                      InputProps={{
                        startAdornment: (
                          <InputAdornment position="start">
-                           <Phone sx={{ color: 'text.secondary', mr: 1 }} />
+                           <Phone sx={profileStyles.inputIcon} />
                          </InputAdornment>
                        ),
                      }}
@@ -116,7 +101,7 @@ const Profile = () => {
                      InputProps={{
                        startAdornment: (
                          <InputAdornment position="start">
-                           <LocationOn sx={{ color: 'text.secondary', mr: 1 }} />
+                           <LocationOn sx={profileStyles.inputIcon} />
                          </InputAdornment>
                        ),
                      }}
@@ -124,11 +109,11 @@ const Profile = () => {
                 </Grid>
              </Grid>
 
-             <Box sx={{ pt: 3, mt: 3, borderTop: 1, borderColor: 'divider', display: 'flex', justifyContent: 'flex-end' }}>
+             <Box sx={profileStyles.formFooter}>
                 <Button 
                   variant="contained" 
                   startIcon={<Save />}
-                  sx={{ boxShadow: 2 }}
+                  sx={profileStyles.saveButton}
                 >
                   Guardar Cambios
                 </Button>

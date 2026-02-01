@@ -2,6 +2,7 @@ import React from 'react'
 import { Inventory, AccessTime, CheckCircle } from '@mui/icons-material'
 import { Box, Grid, Typography, Paper, Avatar, Chip } from '@mui/material'
 import { StatCard } from '../../../shared/components/ui/index.ts'
+import { adminDashboardStyles } from './AdminDashboard.styles.ts'
 
 interface AdminDashboardProps {
   totalOrders: number
@@ -15,13 +16,13 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   pendingDeliveries,
 }) => {
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+    <Box sx={adminDashboardStyles.container}>
       <Typography variant="h4" fontWeight="bold" color="text.primary">
         Panel de Administración
       </Typography>
 
       {/* Stats Grid */}
-      <Grid container spacing={3}>
+      <Grid container spacing={adminDashboardStyles.statsGrid.spacing}>
         <Grid item xs={12} md={4}>
           <StatCard
             icon={Inventory}
@@ -52,25 +53,18 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       </Grid>
 
       {/* Recent Activity Section */}
-      <Paper sx={{ p: 3, border: '1px solid', borderColor: 'divider' }}>
+      <Paper sx={adminDashboardStyles.activityPaper}>
         <Typography variant="h6" fontWeight="bold" mb={2}>
           Actividad Reciente
         </Typography>
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+        <Box sx={adminDashboardStyles.activityList}>
           {[1, 2, 3].map((i) => (
             <Box
               key={i}
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                p: 2,
-                borderRadius: 2,
-                '&:hover': { bgcolor: 'action.hover' },
-                cursor: 'pointer',
-              }}
+              sx={adminDashboardStyles.activityItem}
             >
-              <Avatar sx={{ width: 40, height: 40, mr: 2 }} />
-              <Box sx={{ flexGrow: 1 }}>
+              <Avatar sx={adminDashboardStyles.activityAvatar} />
+              <Box sx={adminDashboardStyles.activityContent}>
                 <Typography variant="body2" fontWeight="bold">
                   Nueva orden #ORD-{100 + i}
                 </Typography>
@@ -78,7 +72,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                   Hace {i * 15} minutos
                 </Typography>
               </Box>
-              <Chip label="Nuevo" size="small" color="primary" sx={{ height: 24 }} />
+              <Chip label="Nuevo" size="small" color="primary" sx={adminDashboardStyles.activityChip} />
             </Box>
           ))}
         </Box>
