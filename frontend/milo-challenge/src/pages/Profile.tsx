@@ -1,5 +1,7 @@
 import React from 'react'
 import { useAuth } from '../context/AuthContext.tsx'
+import { usePageLoading } from '../hooks/usePageLoading.ts'
+import { LoadingState } from '../components/ui/index.ts'
 import { CameraAlt, Email, Phone, LocationOn, Save } from '@mui/icons-material'
 import { 
   Box, 
@@ -15,8 +17,13 @@ import {
 
 const Profile = () => {
   const { user } = useAuth()
+  const isLoading = usePageLoading()
 
   if (!user) return null
+
+  if (isLoading) {
+    return <LoadingState message="Cargando perfil..." />
+  }
 
   return (
     <Box sx={{ maxWidth: 'sm', mx: 'auto', display: 'flex', flexDirection: 'column', gap: 3 }}>

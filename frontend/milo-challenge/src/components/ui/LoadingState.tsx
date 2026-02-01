@@ -17,7 +17,7 @@ export const LoadingState: React.FC<LoadingStateProps> = ({
       justifyContent: 'center',
       alignItems: 'center',
       gap: 2,
-      height: fullHeight ? '100vh' : 'auto',
+      height: fullHeight ? '100vh' : '400px',
       p: 3,
     }}
   >

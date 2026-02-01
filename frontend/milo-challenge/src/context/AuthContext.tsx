@@ -10,6 +10,7 @@ interface AuthContextType {
   isAuthenticated: boolean
   isLoading: boolean
   error: string | null
+  isInitialized: boolean
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -18,6 +19,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [isInitialized, setIsInitialized] = useState(false)
 
   useEffect(() => {
     const storedUser = localStorage.getItem('user')
@@ -28,6 +30,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         localStorage.removeItem('user')
       }
     }
+    setIsInitialized(true)
   }, [])
 
   const login = useCallback(async (email: string, role: UserRole) => {
@@ -63,6 +66,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     isAuthenticated: !!user,
     isLoading,
     error,
+    isInitialized,
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

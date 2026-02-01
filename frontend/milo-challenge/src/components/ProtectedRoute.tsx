@@ -13,15 +13,27 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   children,
   requiredRoles,
 }) => {
-  const { isAuthenticated, user } = useAuth()
+  const { isAuthenticated, user, isInitialized } = useAuth()
 
+  // Si aún se está inicializando (la primera vez), mostrar loading
+  if (!isInitialized) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <CircularProgress />
+      </Box>
+    )
+  }
+
+  // Si no está autenticado después de la inicialización, redirigir a login
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />
   }
 
+  // Si tiene roles requeridos y no coinciden, redirigir a dashboard
   if (requiredRoles && user && !requiredRoles.includes(user.role)) {
     return <Navigate to="/dashboard" replace />
   }
 
-  return <>{children}</>
+  // Si todo está bien, renderizar el contenido
+  return children ? <>{children}</> : null
 }

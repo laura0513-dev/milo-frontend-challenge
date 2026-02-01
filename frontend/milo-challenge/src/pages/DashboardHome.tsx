@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react'
-import { useCurrentUser, useAsync } from '../hooks/index.ts'
+import { useCurrentUser, useAsync, usePageLoading } from '../hooks/index.ts'
 import { orderService } from '../services/orderService.ts'
 import { lockerService } from '../services/lockerService.ts'
 import { OrderStatus, LockerStatus, UserRole } from '../constants/enums.ts'
@@ -21,8 +21,9 @@ import { StatCard, LoadingState, ErrorState } from '../components/ui/index.ts'
 
 const DashboardHome: React.FC = () => {
   const { user, isAdmin, isClient } = useCurrentUser()
+  const isPageLoading = usePageLoading()
 
-  // Cargar datos de órdenes y lockers
+  // Cargar datos de órdenes y lockers - ANTES del if
   const { data: orders, loading: ordersLoading, error: ordersError } = useAsync(
     () => orderService.getOrders(),
     true,
@@ -42,6 +43,10 @@ const DashboardHome: React.FC = () => {
     }),
     [orders, lockers],
   )
+
+  if (isPageLoading) {
+    return <LoadingState message="Cargando dashboard..." />
+  }
 
   if (!user) return null
 

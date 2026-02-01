@@ -1,4 +1,6 @@
 import React from 'react'
+import { usePageLoading } from '../hooks/usePageLoading.ts'
+import { LoadingState } from '../components/ui/index.ts'
 import { MOCK_USERS } from '../data/mockData.ts'
 import { Search, Email, Phone, LocationOn } from '@mui/icons-material'
 import { 
@@ -18,6 +20,12 @@ import {
 } from '@mui/material'
 
 const Clients = () => {
+  const isLoading = usePageLoading()
+  
+  if (isLoading) {
+    return <LoadingState message="Cargando clientes..." />
+  }
+
   const clients = MOCK_USERS.filter(u => u.role === 'client')
 
   return (

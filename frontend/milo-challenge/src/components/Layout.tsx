@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from "react"
+import { useLocation, useNavigate } from "react-router-dom"
 import { useAuth } from "../context/AuthContext.tsx"
 import { Logout, Menu as MenuIcon } from "@mui/icons-material"
 import {
@@ -27,6 +28,8 @@ const drawerWidth = 280
 
 export const Layout: React.FC<LayoutProps> = ({ children }) => {
   const { user, logout } = useAuth()
+  const location = useLocation()
+  const navigate = useNavigate()
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down("md"))
   const [mobileOpen, setMobileOpen] = useState(false)
@@ -34,8 +37,9 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
   // Filtra los links según el rol del usuario de forma eficiente
   const links = useMemo(() => {
     return user ? getNavLinksByRole(user.role) : []
-  }, [user?.role])
+  }, [user])
 
+  // Si no hay usuario autenticado (en login), renderizar solo el contenido sin layout
   if (!user) return <>{children}</>
 
   const handleDrawerToggle = () => {
@@ -88,29 +92,42 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
       <List sx={{ flexGrow: 1 }}>
         {links.map((link) => {
           const Icon = link.icon
+          const isActive = location.pathname === link.path
           return (
             <ListItem key={link.id} disablePadding sx={{ mb: 1 }}>
               <ListItemButton
-                href={link.path}
+                onClick={() => {
+                  navigate(link.path)
+                  // Cerrar drawer en móvil después de navegar
+                  if (mobileOpen) {
+                    setMobileOpen(false)
+                  }
+                }}
                 sx={{
                   borderRadius: 3,
                   textDecoration: 'none',
+                  cursor: 'pointer',
+                  bgcolor: isActive ? "primary.main" : "transparent",
+                  color: isActive ? "white" : "text.primary",
+                  fontWeight: isActive ? 700 : 500,
+                  transition: 'all 0.2s ease',
                   "&:hover": {
-                    bgcolor: "action.hover",
+                    bgcolor: isActive ? "primary.main" : "action.hover",
+                    color: isActive ? "white" : "text.primary",
                   },
                 }}
               >
                 <ListItemIcon
                   sx={{
                     minWidth: 40,
-                    color: "text.secondary",
+                    color: isActive ? "white" : "text.secondary",
                   }}
                 >
                   <Icon />
                 </ListItemIcon>
                 <ListItemText
                   primary={link.label}
-                  primaryTypographyProps={{ fontWeight: 500 }}
+                  primaryTypographyProps={{ fontWeight: isActive ? 700 : 500 }}
                 />
               </ListItemButton>
             </ListItem>

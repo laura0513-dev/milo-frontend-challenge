@@ -1,5 +1,7 @@
 import React from 'react'
 import { useAuth } from '../context/AuthContext.tsx'
+import { usePageLoading } from '../hooks/usePageLoading.ts'
+import { LoadingState } from '../components/ui/index.ts'
 import { MOCK_ORDERS } from '../data/mockData.ts'
 import { Order } from '../types.ts'
 import { Search, FilterList, MoreVert, Add } from '@mui/icons-material'
@@ -38,8 +40,13 @@ const StatusBadge = ({ status }: { status: Order['status'] }) => {
 
 const Orders = () => {
   const { user } = useAuth()
+  const isLoading = usePageLoading()
   
   if (!user) return null
+
+  if (isLoading) {
+    return <LoadingState message="Cargando órdenes..." />
+  }
 
   const orders = user.role === 'admin' 
     ? MOCK_ORDERS 

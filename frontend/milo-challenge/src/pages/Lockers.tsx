@@ -1,5 +1,7 @@
 import React from 'react'
 import { useAuth } from '../context/AuthContext.tsx'
+import { usePageLoading } from '../hooks/usePageLoading.ts'
+import { LoadingState } from '../components/ui/index.ts'
 import { MOCK_LOCKERS, ASSETS } from '../data/mockData.ts'
 import { LocationOn, Inventory2, Add, Settings } from '@mui/icons-material'
 import { 
@@ -16,8 +18,13 @@ import {
 
 const Lockers = () => {
   const { user } = useAuth()
+  const isLoading = usePageLoading()
 
   if (!user) return null
+
+  if (isLoading) {
+    return <LoadingState message="Cargando lockers..." />
+  }
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
