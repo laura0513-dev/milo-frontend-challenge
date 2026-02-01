@@ -1,5 +1,5 @@
 
-import { useAuth } from '../context/AuthContext.tsx'
+import { useAuth } from '../../features/auth/AuthContext.tsx'
 import { UserRole } from '../constants/enums.ts'
 
 export const useCurrentUser = () => {

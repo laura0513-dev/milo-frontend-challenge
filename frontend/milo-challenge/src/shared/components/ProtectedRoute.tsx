@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import { Navigate, useNavigate } from 'react-router-dom'
-import { useAuth } from '../context/AuthContext.tsx'
+import { useAuth } from '../../features/auth/AuthContext.tsx'
 import { UserRole } from '../constants/enums.ts'
 import { Box, CircularProgress } from '@mui/material'
 

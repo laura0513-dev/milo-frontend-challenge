@@ -2,7 +2,7 @@ import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Box, Button, Typography, Container } from '@mui/material'
 import { Error as ErrorIcon } from '@mui/icons-material'
-import { ROUTES } from '../../constants/routes.ts'
+import { ROUTES } from '../../shared/constants/routes.ts'
 
 const NotFound: React.FC = () => {
   const navigate = useNavigate()

@@ -1,7 +1,7 @@
 import React from 'react'
-import { usePageLoading } from '../hooks/usePageLoading.ts'
-import { LoadingState } from '../components/ui/index.ts'
-import { MOCK_USERS } from '../data/mockData.ts'
+import { usePageLoading } from '../../shared/hooks/usePageLoading.ts'
+import { LoadingState } from '../../shared/components/ui/index.ts'
+import { MOCK_USERS } from '../../shared/data/mockData.ts'
 import { Search, Email, Phone, LocationOn } from '@mui/icons-material'
 import { 
   Box, 

@@ -1,9 +1,9 @@
 import React from 'react'
-import { useAuth } from '../context/AuthContext.tsx'
-import { usePageLoading } from '../hooks/usePageLoading.ts'
-import { LoadingState } from '../components/ui/index.ts'
-import { MOCK_ORDERS } from '../data/mockData.ts'
-import { Order } from '../types.ts'
+import { useAuth } from '../auth/AuthContext.tsx'
+import { usePageLoading } from '../../shared/hooks/usePageLoading.ts'
+import { LoadingState } from '../../shared/components/ui/index.ts'
+import { MOCK_ORDERS } from '../../shared/data/mockData.ts'
+import { Order } from '../../shared/types.ts'
 import { Search, FilterList, MoreVert, Add } from '@mui/icons-material'
 import { 
   Box, 

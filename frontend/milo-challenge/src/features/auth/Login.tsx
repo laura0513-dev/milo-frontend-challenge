@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
 import { useNavigate, Navigate } from 'react-router-dom'
-import { useAuth } from '../context/AuthContext.tsx'
-import { ROUTES } from '../constants/routes.ts'
-import { UserRole } from '../constants/enums.ts'
+import { useAuth } from './AuthContext.tsx'
+import { ROUTES } from '../../shared/constants/routes.ts'
+import { UserRole } from '../../shared/constants/enums.ts'
 import { Person, Lock, ArrowForward } from '@mui/icons-material'
 import {
   Box,

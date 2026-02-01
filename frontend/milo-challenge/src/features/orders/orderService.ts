@@ -1,6 +1,6 @@
-import { MOCK_ORDERS } from '../data/mockData.ts'
-import type { Order } from '../types.ts'
-import { OrderStatus } from '../constants/enums.ts'
+import { MOCK_ORDERS } from '../../shared/data/mockData.ts'
+import type { Order } from '../../shared/types.ts'
+import { OrderStatus } from '../../shared/constants/enums.ts'
 
 class OrderService {
 

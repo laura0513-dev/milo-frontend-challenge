@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, ReactNode, useCallback, useEffect } from 'react'
-import { User } from '../types'
-import { authService } from '../services/authService.ts'
-import { UserRole } from '../constants/enums.ts'
+import { User } from '../../shared/types'
+import { authService } from './authService.ts'
+import { UserRole } from '../../shared/constants/enums.ts'
 
 interface AuthContextType {
   user: User | null

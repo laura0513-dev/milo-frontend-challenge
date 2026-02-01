@@ -1,7 +1,7 @@
 
-import { MOCK_LOCKERS } from '../data/mockData.ts'
-import type { Locker } from '../types.ts'
-import { LockerStatus } from '../constants/enums.ts'
+import { MOCK_LOCKERS } from '../../shared/data/mockData.ts'
+import type { Locker } from '../../shared/types.ts'
+import { LockerStatus } from '../../shared/constants/enums.ts'
 
 class LockerService {
   async getLockers(): Promise<Locker[]> {

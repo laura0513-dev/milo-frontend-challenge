@@ -1,8 +1,8 @@
 import React from 'react'
-import { useAuth } from '../context/AuthContext.tsx'
-import { usePageLoading } from '../hooks/usePageLoading.ts'
-import { LoadingState } from '../components/ui/index.ts'
-import { MOCK_LOCKERS, ASSETS } from '../data/mockData.ts'
+import { useAuth } from '../auth/AuthContext.tsx'
+import { usePageLoading } from '../../shared/hooks/usePageLoading.ts'
+import { LoadingState } from '../../shared/components/ui/index.ts'
+import { MOCK_LOCKERS, ASSETS } from '../../shared/data/mockData.ts'
 import { LocationOn, Inventory2, Add, Settings } from '@mui/icons-material'
 import { 
   Box, 

@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from "react"
 import { useLocation, useNavigate } from "react-router-dom"
-import { useAuth } from "../context/AuthContext.tsx"
+import { useAuth } from "../../features/auth/AuthContext.tsx"
 import { Logout, Menu as MenuIcon } from "@mui/icons-material"
 import {
   Box,

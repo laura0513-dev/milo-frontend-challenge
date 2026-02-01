@@ -1,7 +1,7 @@
 
-import { MOCK_USERS } from '../data/mockData.ts'
-import type { User } from '../types.ts'
-import { UserRole } from '../constants/enums.ts'
+import { MOCK_USERS } from '../../shared/data/mockData.ts'
+import type { User } from '../../shared/types.ts'
+import { UserRole } from '../../shared/constants/enums.ts'
 
 class AuthService {
   async login(email: string, role: UserRole): Promise<User | null> {
