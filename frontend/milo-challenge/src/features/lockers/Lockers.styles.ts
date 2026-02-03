@@ -19,18 +19,34 @@ export const lockersStyles = {
     spacing: 3,
   },
 
+  gridItem: {
+    display: 'flex',
+    justifyContent: 'center',
+  } as SxProps<Theme>,
+
   card: {
     position: 'relative',
+    width: { xs: '100%', sm: '100%', lg: 360 },
+    height: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+    transition: 'transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out',
+    '&:hover': {
+      transform: 'translateY(-4px)',
+      boxShadow: 4,
+    },
   } as SxProps<Theme>,
 
   cardMediaContainer: {
     position: 'relative',
-    height: 140,
+    height: 180,
+    flexShrink: 0,
   } as SxProps<Theme>,
 
   cardMedia: {
     height: '100%',
     width: '100%',
+    objectFit: 'cover',
   } as SxProps<Theme>,
 
   statusBadgeContainer: {
@@ -44,42 +60,85 @@ export const lockersStyles = {
     color: 'white',
   } as SxProps<Theme>,
 
+  cardContent: {
+    flexGrow: 1,
+    display: 'flex',
+    flexDirection: 'column',
+    p: 2,
+  } as SxProps<Theme>,
+
   cardHeaderContainer: {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    mb: 1,
+    mb: 1.5,
+    minHeight: 60,
+  } as SxProps<Theme>,
+
+  cardTitleContainer: {
+    flex: 1,
+    minWidth: 0,
+  } as SxProps<Theme>,
+
+  cardTitle: {
+    fontSize: '1.1rem',
+    fontWeight: 600,
+    mb: 0.5,
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    display: '-webkit-box',
+    WebkitLineClamp: 2,
+    WebkitBoxOrient: 'vertical',
   } as SxProps<Theme>,
 
   locationContainer: {
     display: 'flex',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     color: 'text.secondary',
-    mt: 0.5,
+    gap: 0.5,
   } as SxProps<Theme>,
 
   locationIcon: {
     fontSize: 16,
-    mr: 0.5,
+    flexShrink: 0,
+    mt: 0.25,
+  } as SxProps<Theme>,
+
+  locationText: {
+    fontSize: '0.875rem',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    display: '-webkit-box',
+    WebkitLineClamp: 2,
+    WebkitBoxOrient: 'vertical',
   } as SxProps<Theme>,
 
   iconBox: {
-    bgcolor: 'action.hover',
+    bgcolor: 'primary.main',
+    color: 'primary.contrastText',
     p: 1,
-    borderRadius: 1,
+    borderRadius: 1.5,
+    flexShrink: 0,
+    ml: 1,
   } as SxProps<Theme>,
 
   inventoryIcon: {
-    color: 'text.secondary',
+    fontSize: 24,
+  } as SxProps<Theme>,
+
+  coordinatesChip: {
+    fontSize: '0.75rem',
+    height: 28,
   } as SxProps<Theme>,
 
   cardFooter: {
-    mt: 2,
+    mt: 'auto',
     pt: 2,
     borderTop: 1,
     borderColor: 'divider',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
+    gap: 1,
   } as SxProps<Theme>,
 }

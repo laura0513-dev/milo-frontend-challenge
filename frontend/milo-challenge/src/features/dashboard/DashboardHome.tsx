@@ -1,33 +1,37 @@
 import React, { useMemo } from 'react'
+import { useAuth } from '../auth/AuthContext.tsx'
 import { useCurrentUser, useAsync, usePageLoading } from '../../shared/hooks/index.ts'
 import { orderService } from '../orders/orderService.ts'
 import { lockerService } from '../lockers/lockerService.ts'
-import { OrderStatus, LockerStatus } from '../../shared/constants/enums.ts'
+import { OrderStatus, UserRole } from '../../shared/constants/enums.ts'
 import { LoadingState, ErrorState } from '../../shared/components/ui/index.ts'
 import { AdminDashboard } from './components/AdminDashboard.tsx'
 import { ClientDashboard } from './components/ClientDashboard.tsx'
+import { DeliveryDashboard } from './components/DeliveryDashboard.tsx'
 
 const DashboardHome: React.FC = () => {
-  const { user, isAdmin, isClient } = useCurrentUser()
+  const { user, token } = useAuth()
+  const { isAdmin, isClient } = useCurrentUser()
   const isPageLoading = usePageLoading()
 
-  // Cargar datos de órdenes y lockers
+  // Cargar datos de órdenes solo para admin
   const { data: orders, loading: ordersLoading, error: ordersError } = useAsync(
-    () => orderService.getOrders(),
-    true,
+    () => (token && isAdmin ? orderService.getOrders(token) : Promise.resolve([])),
+    !!(token && isAdmin),
   )
 
+  // Cargar datos de lockers solo para admin
   const { data: lockers, loading: lockersLoading, error: lockersError } = useAsync(
-    () => lockerService.getLockers(),
-    true,
+    () => (token && isAdmin ? lockerService.getAllLockers(token) : Promise.resolve([])),
+    !!(token && isAdmin),
   )
 
   // Métricas para admin
   const adminMetrics = useMemo(
     () => ({
-      totalOrders: orders?.length || 0,
-      availableLockers: lockers?.filter((l) => l.status === LockerStatus.AVAILABLE).length || 0,
-      pendingDeliveries: orders?.filter((o) => o.status === OrderStatus.PREPARING).length || 0,
+      preparingOrders: orders?.filter((o) => o.status_id === 1).length || 0,
+      totalLockers: lockers?.length || 0,
+      inTransitOrders: orders?.filter((o) => o.status_id === 2).length || 0,
     }),
     [orders, lockers],
   )
@@ -36,7 +40,7 @@ const DashboardHome: React.FC = () => {
     return <LoadingState message="Cargando dashboard..." />
   }
 
-  if (!user) return null
+  if (!user || !token) return null
 
   if (isAdmin) {
     if (ordersLoading || lockersLoading) return <LoadingState fullHeight />
@@ -45,15 +49,20 @@ const DashboardHome: React.FC = () => {
 
     return (
       <AdminDashboard
-        totalOrders={adminMetrics.totalOrders}
-        availableLockers={adminMetrics.availableLockers}
-        pendingDeliveries={adminMetrics.pendingDeliveries}
+        preparingOrders={adminMetrics.preparingOrders}
+        totalLockers={adminMetrics.totalLockers}
+        inTransitOrders={adminMetrics.inTransitOrders}
+        orders={orders || []}
       />
     )
   }
 
   if (isClient) {
-    return <ClientDashboard userName={user.name} />
+    return <ClientDashboard userName={user.name} userId={user.id} token={token} />
+  }
+
+  if (user.role === UserRole.DELIVERY) {
+    return <DeliveryDashboard userId={user.id} userName={user.name} token={token} />
   }
 
   return null

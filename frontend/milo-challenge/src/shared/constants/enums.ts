@@ -1,12 +1,13 @@
 export enum UserRole {
   ADMIN = 'admin',
-  CLIENT = 'client',
+  CLIENT = 'cliente',
+  DELIVERY = 'delivery',
 }
 
 export enum OrderStatus {
-  PENDING = 'pending',
   PREPARING = 'preparing',
-  READY = 'ready',
+  IN_TRANSIT = 'in_transit',
+  IN_LOCKER = 'in_locker',
   DELIVERED = 'delivered',
   CANCELLED = 'cancelled',
 }

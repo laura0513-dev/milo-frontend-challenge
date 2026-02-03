@@ -4,7 +4,7 @@ import { CustomModal, ModalButton } from '../../../shared/components/ui/index.ts
 
 interface CancelOrderModalProps {
   open: boolean
-  orderId: string | null
+  orderId: number | null
   onClose: () => void
   onConfirm: () => void
 }

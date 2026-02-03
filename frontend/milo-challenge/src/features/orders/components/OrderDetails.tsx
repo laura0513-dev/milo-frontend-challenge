@@ -10,13 +10,13 @@ interface OrderDetailsProps {
 export const OrderDetails: React.FC<OrderDetailsProps> = ({ order }) => {
   const getStatusConfig = (status: Order['status']) => {
     const configs = {
-      pending: { color: 'warning' as const, label: 'Pendiente' },
-      preparing: { color: 'info' as const, label: 'Preparando' },
-      ready: { color: 'secondary' as const, label: 'Listo' },
-      delivered: { color: 'success' as const, label: 'Entregado' },
-      cancelled: { color: 'error' as const, label: 'Cancelado' },
+      preparing: { color: 'info' as const, label: 'En preparación' },
+      in_transit: { color: 'warning' as const, label: 'En camino' },
+      in_locker: { color: 'secondary' as const, label: 'En el locker' },
+      delivered: { color: 'success' as const, label: 'Entregada' },
+      cancelled: { color: 'error' as const, label: 'Cancelada' },
     }
-    return configs[status] || configs.pending
+    return configs[status] || configs.preparing
   }
 
   const statusConfig = getStatusConfig(order.status)
@@ -99,40 +99,6 @@ export const OrderDetails: React.FC<OrderDetailsProps> = ({ order }) => {
           </Box>
         </Grid>
       </Grid>
-
-      <Divider />
-
-      {/* Items */}
-      <Box>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-          <ListAlt sx={{ color: 'text.secondary', fontSize: 20 }} />
-          <Typography variant="subtitle1" fontWeight="bold">
-            Items del pedido
-          </Typography>
-        </Box>
-        <Stack spacing={1.5}>
-          {order.items.map((item, idx) => (
-            <Box 
-              key={idx}
-              sx={{ 
-                p: 2, 
-                bgcolor: 'action.hover', 
-                borderRadius: 2,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between'
-              }}
-            >
-              <Typography variant="body1">{item}</Typography>
-              <Chip 
-                label={`#${idx + 1}`} 
-                size="small" 
-                variant="outlined"
-              />
-            </Box>
-          ))}
-        </Stack>
-      </Box>
     </Box>
   )
 }

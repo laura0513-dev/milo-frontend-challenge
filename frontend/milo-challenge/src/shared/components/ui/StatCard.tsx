@@ -9,6 +9,7 @@ interface StatCardProps {
   subtitle: string
   color?: 'primary' | 'success' | 'warning' | 'error' | 'info'
   sx?: any
+  onClick?: () => void
 }
 
 export const StatCard: React.FC<StatCardProps> = ({
@@ -18,6 +19,7 @@ export const StatCard: React.FC<StatCardProps> = ({
   subtitle,
   color = 'primary',
   sx,
+  onClick,
 }) => {
   const colorMap = {
     primary: { main: 'primary.main', light: 'primary.light' },
@@ -28,7 +30,14 @@ export const StatCard: React.FC<StatCardProps> = ({
   }
 
   return (
-    <Box sx={{ transition: 'transform 0.2s', '&:hover': { transform: 'scale(1.02)' } }}>
+    <Box 
+      sx={{ 
+        transition: 'transform 0.2s', 
+        '&:hover': { transform: 'scale(1.02)' },
+        cursor: onClick ? 'pointer' : 'default'
+      }}
+      onClick={onClick}
+    >
       <Paper sx={{ p: 3, border: '1px solid', borderColor: 'divider', ...sx }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
           <Box

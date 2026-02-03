@@ -1,15 +1,22 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { CustomModal, ModalButton } from '../../../shared/components/ui/index.ts'
-import { NewLockerForm } from '../forms/NewLockerForm.tsx'
 import { Locker } from '../../../shared/types.ts'
 import { Save } from '@mui/icons-material'
+import { useAuth } from '../../auth/AuthContext.tsx'
+import {
+  TextField,
+  Box,
+  Typography,
+  FormControlLabel,
+  Switch,
+} from '@mui/material'
 
 interface LockerFormModalProps {
   open: boolean
   isEditMode: boolean
   lockerToEdit: Locker | null
   onClose: () => void
-  onSubmit: () => void
+  onSubmit: (data: any) => void | Promise<void>
 }
 
 export const LockerFormModal: React.FC<LockerFormModalProps> = ({
@@ -19,6 +26,55 @@ export const LockerFormModal: React.FC<LockerFormModalProps> = ({
   onClose,
   onSubmit,
 }) => {
+  const { user } = useAuth()
+  const [formData, setFormData] = useState<{
+    name: string
+    address: string
+    latitude: number
+    longitude: number
+    is_active: boolean
+  }>({
+    name: '',
+    address: '',
+    latitude: 0,
+    longitude: 0,
+    is_active: true,
+  })
+
+  useEffect(() => {
+    if (isEditMode && lockerToEdit) {
+      setFormData({
+        name: lockerToEdit.name || '',
+        address: lockerToEdit.address || '',
+        latitude: lockerToEdit.latitude || 0,
+        longitude: lockerToEdit.longitude || 0,
+        is_active: lockerToEdit.is_active !== false,
+      })
+    } else {
+      setFormData({
+        name: '',
+        address: '',
+        latitude: 0,
+        longitude: 0,
+        is_active: true,
+      })
+    }
+  }, [isEditMode, lockerToEdit, open])
+
+  const handleChange = (field: string) => (event: any) => {
+    setFormData({ ...formData, [field]: event.target.value })
+  }
+
+  const handleSubmit = () => {
+    // Asegurar que latitude y longitude sean números
+    const submitData = {
+      ...formData,
+      latitude: Number(formData.latitude),
+      longitude: Number(formData.longitude),
+    }
+    onSubmit(submitData)
+  }
+
   const modalButtons: ModalButton[] = [
     {
       label: 'Cancelar',
@@ -27,7 +83,7 @@ export const LockerFormModal: React.FC<LockerFormModalProps> = ({
     },
     {
       label: isEditMode ? 'Actualizar Locker' : 'Crear Locker',
-      onClick: onSubmit,
+      onClick: handleSubmit,
       variant: 'contained',
       color: 'primary',
       startIcon: <Save />,
@@ -42,7 +98,66 @@ export const LockerFormModal: React.FC<LockerFormModalProps> = ({
       buttons={modalButtons}
       maxWidth="sm"
     >
-      <NewLockerForm initialData={isEditMode ? lockerToEdit || undefined : undefined} />
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+          Complete los datos del locker
+        </Typography>
+
+        <TextField
+          label="Nombre del Locker"
+          placeholder="Locker Centro"
+          value={formData.name}
+          onChange={handleChange('name')}
+          fullWidth
+          required
+          helperText="Nombre descriptivo del locker"
+        />
+
+        <TextField
+          label="Dirección del Locker"
+          placeholder="Calle 10 #15-30, Bogotá"
+          value={formData.address}
+          onChange={handleChange('address')}
+          fullWidth
+          required
+          helperText="Dirección completa del locker"
+        />
+
+        <TextField
+          label="Latitud"
+          placeholder="4.716900"
+          type="number"
+          value={formData.latitude}
+          onChange={handleChange('latitude')}
+          fullWidth
+          required
+          helperText="Coordenada de latitud (-90 a 90)"
+          inputProps={{ step: 'any', min: -90, max: 90 }}
+        />
+
+        <TextField
+          label="Longitud"
+          placeholder="-74.045600"
+          type="number"
+          value={formData.longitude}
+          onChange={handleChange('longitude')}
+          fullWidth
+          required
+          helperText="Coordenada de longitud (-180 a 180)"
+          inputProps={{ step: 'any', min: -180, max: 180 }}
+        />
+
+        <FormControlLabel
+          control={
+            <Switch
+              checked={formData.is_active}
+              onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
+              color="primary"
+            />
+          }
+          label="Locker activo"
+        />
+      </Box>
     </CustomModal>
   )
 }

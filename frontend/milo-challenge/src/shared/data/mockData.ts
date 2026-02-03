@@ -16,6 +16,14 @@ export const MOCK_USERS: User[] = [
     phone: '+57 300 123 4567',
     address: 'Calle 123 #45-67, Bogotá',
     avatarUrl: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=1000',
+  },
+  {
+    id: 'delivery1',
+    name: 'Pedro Repartidor',
+    email: 'delivery@rappiclone.com',
+    role: 'delivery',
+    phone: '+57 310 987 6543',
+    avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=1000',
   }
 ]
 
@@ -35,6 +43,7 @@ export const MOCK_ORDERS: Order[] = [
     status: 'delivered',
     lockerId: 'l2',
     date: '2023-10-25T14:30:00',
+    deliveryPersonId: 'delivery1',
   },
   {
     id: 'ord-002',
@@ -43,14 +52,41 @@ export const MOCK_ORDERS: Order[] = [
     total: 42000,
     status: 'preparing',
     date: '2023-10-26T18:15:00',
+    deliveryPersonId: 'delivery1',
   },
   {
     id: 'ord-003',
     userId: 'client1',
     items: ['Sushi Roll', 'Té Helado'],
     total: 28000,
-    status: 'pending',
+    status: 'preparing',
     date: '2023-10-27T12:00:00',
+  },
+  {
+    id: 'ord-004',
+    userId: 'client1',
+    items: ['Tacos Mexicanos x3', 'Agua de Horchata'],
+    total: 32000,
+    status: 'in_transit',
+    deliveryPersonId: 'delivery1',
+    date: '2023-10-27T13:30:00',
+  },
+  {
+    id: 'ord-005',
+    userId: 'client1',
+    items: ['Ensalada César', 'Jugo Natural'],
+    total: 25000,
+    status: 'in_locker',
+    lockerId: 'l1',
+    date: '2023-10-27T14:00:00',
+  },
+  {
+    id: 'ord-006',
+    userId: 'client1',
+    items: ['Pasta Carbonara', 'Té Helado'],
+    total: 38000,
+    status: 'preparing',
+    date: '2023-10-27T14:30:00',
   }
 ]
 

@@ -1,8 +1,11 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
+import { useAuth } from '../auth/AuthContext.tsx'
 import { usePageLoading } from '../../shared/hooks/usePageLoading.ts'
-import { LoadingState } from '../../shared/components/ui/index.ts'
-import { MOCK_USERS } from '../../shared/data/mockData.ts'
+import { LoadingState, ErrorState } from '../../shared/components/ui/index.ts'
+import { User } from '../../shared/types.ts'
+import { clientService } from './clientService.ts'
 import { Search, Email, Phone, LocationOn } from '@mui/icons-material'
+import { clientsStyles } from './Clients.styles.ts'
 import { 
   Box, 
   Typography, 
@@ -19,76 +22,149 @@ import {
   Stack
 } from '@mui/material'
 
+const getRoleLabel = (role: string): string => {
+  const roleLabels: Record<string, string> = {
+    'client': 'Cliente',
+    'delivery': 'Delivery',
+    'admin': 'Administrador'
+  }
+  return roleLabels[role] || role
+}
+
 const Clients = () => {
+  const { token, user } = useAuth()
   const isLoading = usePageLoading()
+  const [users, setUsers] = useState<User[]>([])
+  const [isLoadingUsers, setIsLoadingUsers] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   
-  if (isLoading) {
-    return <LoadingState message="Cargando clientes..." />
+  useEffect(() => {
+    const loadUsers = async () => {
+      if (!token || !user) {
+        setIsLoadingUsers(false)
+        return
+      }
+
+      // Verificar que el usuario sea admin
+      if (user.role !== 'admin') {
+        setError('No tienes permisos para ver esta página')
+        setIsLoadingUsers(false)
+        return
+      }
+
+      setError(null)
+      try {
+        const fetchedUsers = await clientService.getAllUsers(token)
+        setUsers(fetchedUsers)
+      } catch (error) {
+        console.error('Error cargando usuarios:', error)
+        setError('Algo salió mal, intenta de nuevo más tarde')
+        setUsers([])
+      } finally {
+        setIsLoadingUsers(false)
+      }
+    }
+
+    loadUsers()
+  }, [token, user])
+
+  const handleRetry = async () => {
+    if (!token || !user) return
+    
+    // Verificar que el usuario sea admin
+    if (user.role !== 'admin') {
+      setError('No tienes permisos para ver esta página')
+      return
+    }
+
+    setIsLoadingUsers(true)
+    setError(null)
+    try {
+      const fetchedUsers = await clientService.getAllUsers(token)
+      setUsers(fetchedUsers)
+    } catch (error) {
+      console.error('Error cargando usuarios:', error)
+      setError('Algo salió mal, intenta de nuevo más tarde')
+    } finally {
+      setIsLoadingUsers(false)
+    }
+  }
+  
+  if (isLoading || isLoadingUsers) {
+    return <LoadingState message="Cargando usuarios..." />
   }
 
-  const clients = MOCK_USERS.filter(u => u.role === 'client')
+  if (error) {
+    return <ErrorState message={error} onRetry={handleRetry} fullHeight />
+  }
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-      <Typography variant="h5" fontWeight="bold">Gestión de Clientes</Typography>
+    <Box sx={clientsStyles.container}>
+      <Typography variant="h5" sx={clientsStyles.title}>Gestión de Usuarios</Typography>
 
       <Paper 
         component="form" 
-        sx={{ 
-          p: '2px 4px', 
-          display: 'flex', 
-          alignItems: 'center', 
-          width: '100%', 
-          borderRadius: 3,
-          boxShadow: 0,
-          border: '1px solid',
-          borderColor: 'divider'
-        }}
+        sx={clientsStyles.searchPaper}
       >
         <IconButton sx={{ p: '10px' }} aria-label="search">
           <Search sx={{ color: 'text.secondary' }} />
         </IconButton>
         <InputBase
-          sx={{ ml: 1, flex: 1 }}
-          placeholder="Buscar clientes..."
+          sx={clientsStyles.searchInput}
+          placeholder="Buscar usuarios..."
         />
       </Paper>
 
-      <TableContainer component={Paper} sx={{ borderRadius: 4, border: '1px solid', borderColor: 'divider', boxShadow: 0 }}>
+      <TableContainer component={Paper} sx={clientsStyles.tableContainer}>
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
-          <TableHead sx={{ bgcolor: 'grey.50' }}>
+          <TableHead sx={clientsStyles.tableHead}>
             <TableRow>
-              <TableCell sx={{ color: 'text.secondary', fontWeight: 'medium' }}>Cliente</TableCell>
-              <TableCell sx={{ color: 'text.secondary', fontWeight: 'medium' }}>Contacto</TableCell>
-              <TableCell sx={{ color: 'text.secondary', fontWeight: 'medium' }}>Ubicación</TableCell>
+              <TableCell sx={clientsStyles.tableHeaderCell}>Usuario</TableCell>
+              <TableCell sx={clientsStyles.tableHeaderCell}>Rol</TableCell>
+              <TableCell sx={clientsStyles.tableHeaderCell}>Contacto</TableCell>
+              <TableCell sx={clientsStyles.tableHeaderCell}>Ubicación</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {clients.map((client) => (
+            {users.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={4} align="center" sx={{ py: 8 }}>
+                  <Typography variant="body2" color="text.secondary">
+                    No hay usuarios registrados
+                  </Typography>
+                </TableCell>
+              </TableRow>
+            ) : (
+              users.map((client) => (
               <TableRow
                 key={client.id}
-                sx={{ '&:last-child td, &:last-child th': { border: 0 }, '&:hover': { bgcolor: 'action.hover' } }}
+                sx={clientsStyles.tableRow}
               >
                 <TableCell component="th" scope="row">
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                  <Box sx={clientsStyles.clientNameBox}>
                     <Avatar src={client.avatarUrl} alt={client.name} />
                     <Box>
                       <Typography variant="body2" fontWeight="medium">{client.name}</Typography>
-                      <Typography variant="caption" color="text.secondary" sx={{ display: { md: 'none' } }}>
+                      <Typography variant="caption" color="text.secondary" sx={clientsStyles.clientNameText}>
                         {client.email}
                       </Typography>
                     </Box>
                   </Box>
                 </TableCell>
                 <TableCell>
-                  <Stack spacing={0.5}>
-                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'text.secondary' }}>
-                       <Email sx={{ fontSize: 16 }} />
+                  <Typography variant="body2" sx={{ textTransform: 'capitalize' }}>
+                    {getRoleLabel(client.role)}
+                  </Typography>
+                </TableCell>
+                <TableCell>
+                  <Stack sx={clientsStyles.contactStack}>
+                     <Box sx={clientsStyles.contactItem}>
+                       <Email sx={clientsStyles.iconSize} />
                        <Typography variant="caption">{client.email}</Typography>
                      </Box>
                      {client.phone && (
-                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'text.secondary' }}>
-                         <Phone sx={{ fontSize: 16 }} />
+                       <Box sx={clientsStyles.contactItem}>
+                         <Phone sx={clientsStyles.iconSize} />
                          <Typography variant="caption">{client.phone}</Typography>
                        </Box>
                      )}
@@ -96,16 +172,17 @@ const Clients = () => {
                 </TableCell>
                 <TableCell>
                    {client.address ? (
-                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'text.secondary' }}>
-                       <LocationOn sx={{ fontSize: 16 }} />
+                     <Box sx={clientsStyles.locationBox}>
+                       <LocationOn sx={clientsStyles.iconSize} />
                        <Typography variant="caption">{client.address}</Typography>
                      </Box>
                    ) : (
-                     <Typography variant="caption" color="text.disabled" fontStyle="italic">Sin dirección</Typography>
+                     <Typography variant="caption" color="text.disabled" sx={clientsStyles.emptyLocationText}>Sin dirección</Typography>
                    )}
                 </TableCell>
               </TableRow>
-            ))}
+            )))
+            }
           </TableBody>
         </Table>
       </TableContainer>

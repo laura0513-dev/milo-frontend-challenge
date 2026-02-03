@@ -3,8 +3,8 @@ import { useNavigate, Navigate } from 'react-router-dom'
 import { useAuth } from './AuthContext.tsx'
 import { ROUTES } from '../../shared/constants/routes.ts'
 import { UserRole } from '../../shared/constants/enums.ts'
-import { Person, Lock, ArrowForward, Visibility, VisibilityOff } from '@mui/icons-material'
-import { loginStyles } from './Login.styles.ts'
+import { Person, Lock, ArrowForward, AdminPanelSettings, Visibility, VisibilityOff } from '@mui/icons-material'
+import { adminLoginStyles } from './AdminLogin.styles.ts'
 import {
   Box,
   Button,
@@ -13,8 +13,6 @@ import {
   TextField,
   Typography,
   InputAdornment,
-  ToggleButtonGroup,
-  ToggleButton,
   Link,
   Fade,
   Alert,
@@ -22,31 +20,35 @@ import {
 } from '@mui/material'
 
 interface FormErrors {
-  email?: string
+  username?: string
   password?: string
 }
 
-const Login: React.FC = () => {
-  const { login, isLoading, error, isAuthenticated } = useAuth()
+const AdminLogin: React.FC = () => {
+  const { login, isLoading, error, isAuthenticated, user } = useAuth()
   const navigate = useNavigate()
-  const [email, setEmail] = useState('')
+  const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
-  const [role, setRole] = useState<UserRole>(UserRole.CLIENT)
   const [formErrors, setFormErrors] = useState<FormErrors>({})
 
-  // Si ya está autenticado, redirigir al dashboard
-  if (isAuthenticated) {
+  // Si ya está autenticado y es admin, redirigir al dashboard
+  if (isAuthenticated && user?.role === UserRole.ADMIN) {
     return <Navigate to={ROUTES.DASHBOARD} replace />
+  }
+
+  // Si está autenticado pero no es admin, redirigir al login normal
+  if (isAuthenticated && user?.role !== UserRole.ADMIN) {
+    return <Navigate to={ROUTES.LOGIN} replace />
   }
 
   const validateForm = (): boolean => {
     const errors: FormErrors = {}
 
-    if (!email.trim()) {
-      errors.email = 'El correo electrónico es requerido'
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      errors.email = 'Ingresa un correo electrónico válido'
+    if (!username.trim()) {
+      errors.username = 'El nombre de usuario es requerido'
+    } else if (username.length < 3) {
+      errors.username = 'El nombre de usuario debe tener al menos 3 caracteres'
     }
 
     if (!password) {
@@ -64,66 +66,56 @@ const Login: React.FC = () => {
     if (!validateForm()) return
 
     try {
-      const emailToUse = email || (role === UserRole.DELIVERY ? 'delivery@rappiclone.com' : 'client@rappiclone.com')
-      await login(emailToUse, password, role)
+      const usernameToUse = username || 'admin_user'
+      await login(usernameToUse, password, UserRole.ADMIN)
       navigate(ROUTES.DASHBOARD)
     } catch (err) {
-      // Error manejado por el contexto
       console.error('Login error:', err)
     }
   }
 
   return (
-    <Box sx={loginStyles.mainContainer}>
+    <Box sx={adminLoginStyles.mainContainer}>
       <Container maxWidth="xs">
-        <Box sx={loginStyles.headerBox}>
-          <Box sx={loginStyles.iconBox}>
-            <Typography variant="h5" sx={loginStyles.iconText}>
-              R
-            </Typography>
+        <Box sx={adminLoginStyles.headerBox}>
+          <Box sx={adminLoginStyles.iconBox}>
+            <AdminPanelSettings sx={adminLoginStyles.iconStyle} />
           </Box>
-          <Typography variant="h4" sx={loginStyles.title} color="text.primary" gutterBottom>
-            Inicia Sesión
+          <Typography variant="h4" sx={adminLoginStyles.title} color="text.primary" gutterBottom>
+            Acceso Administrativo
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            O{' '}
-            <Link href="#" underline="hover" color="primary" fontWeight="medium">
-              crea una cuenta nueva
-            </Link>
+            Solo personal autorizado
           </Typography>
         </Box>
 
         <Fade in timeout={800}>
-          <Paper elevation={0} sx={loginStyles.paper}>
+          <Paper elevation={0} sx={adminLoginStyles.paper}>
             {error && (
-              <Alert severity="error" sx={loginStyles.alert}>
+              <Alert severity="error" sx={adminLoginStyles.alert}>
                 {error}
               </Alert>
             )}
 
             <form onSubmit={handleSubmit}>
-              <Box sx={loginStyles.formBox}>
+              <Box sx={adminLoginStyles.formBox}>
                 <TextField
                   fullWidth
-                  id="email"
-                  label="Correo Electrónico"
-                  type="email"
-                  value={email}
+                  id="username"
+                  label="Usuario Administrativo"
+                  type="text"
+                  value={username}
                   onChange={(e) => {
-                    setEmail(e.target.value)
-                    if (formErrors.email) setFormErrors({ ...formErrors, email: undefined })
+                    setUsername(e.target.value)
+                    if (formErrors.username) setFormErrors({ ...formErrors, username: undefined })
                   }}
-                  placeholder={
-                    role === UserRole.DELIVERY
-                      ? 'delivery@rappiclone.com'
-                      : 'client@rappiclone.com'
-                  }
-                  error={!!formErrors.email}
-                  helperText={formErrors.email}
+                  placeholder="admin_user"
+                  error={!!formErrors.username}
+                  helperText={formErrors.username}
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
-                        <Person sx={loginStyles.inputAdornment} />
+                        <Person sx={adminLoginStyles.inputAdornment} />
                       </InputAdornment>
                     ),
                   }}
@@ -147,7 +139,7 @@ const Login: React.FC = () => {
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
-                        <Lock sx={loginStyles.inputAdornment} />
+                        <Lock sx={adminLoginStyles.inputAdornment} />
                       </InputAdornment>
                     ),
                     endAdornment: (
@@ -166,46 +158,34 @@ const Login: React.FC = () => {
                   disabled={isLoading}
                 />
 
-                <Box>
-                  <Typography
-                    variant="body2"
-                    fontWeight="medium"
-                    gutterBottom
-                    color="text.secondary"
-                  >
-                    Tipo de Usuario
-                  </Typography>
-                  <ToggleButtonGroup
-                    value={role}
-                    exclusive
-                    onChange={(e, newRole) => {
-                      if (newRole) setRole(newRole)
-                    }}
-                    fullWidth
-                    color="primary"
-                    size="small"
-                    disabled={isLoading}
-                  >
-                    <ToggleButton value={UserRole.CLIENT} sx={loginStyles.toggleButton}>
-                      Cliente
-                    </ToggleButton>
-                    <ToggleButton value={UserRole.DELIVERY} sx={loginStyles.toggleButton}>
-                      Repartidor
-                    </ToggleButton>
-                  </ToggleButtonGroup>
-                </Box>
+                <Alert severity="info" sx={adminLoginStyles.infoAlert}>
+                  Solo usuarios con rol de Administrador pueden acceder a este portal
+                </Alert>
 
                 <Button
                   type="submit"
                   fullWidth
                   variant="contained"
                   size="large"
+                  color="error"
                   endIcon={<ArrowForward />}
-                  sx={loginStyles.submitButton}
+                  sx={adminLoginStyles.submitButton}
                   disabled={isLoading}
                 >
-                  {isLoading ? 'Ingresando...' : 'Ingresar'}
+                  {isLoading ? 'Verificando...' : 'Acceder'}
                 </Button>
+
+                <Box sx={adminLoginStyles.linkBox}>
+                  <Link 
+                    onClick={() => navigate(ROUTES.LOGIN)} 
+                    underline="hover" 
+                    color="primary" 
+                    fontWeight="medium"
+                    sx={adminLoginStyles.link}
+                  >
+                    ← Volver al login normal
+                  </Link>
+                </Box>
               </Box>
             </form>
           </Paper>
@@ -215,4 +195,4 @@ const Login: React.FC = () => {
   )
 }
 
-export default Login
+export default AdminLogin

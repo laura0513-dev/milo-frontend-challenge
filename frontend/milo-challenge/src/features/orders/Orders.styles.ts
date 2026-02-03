@@ -57,6 +57,7 @@ export const ordersStyles = {
 
   ordersList: {
     spacing: 2,
+    gap: 2,
   },
 
   orderCard: {
@@ -85,12 +86,13 @@ export const ordersStyles = {
   orderFooter: {
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-end',
   } as SxProps<Theme>,
 
   orderActions: {
     display: 'flex',
     gap: 1,
+    alignItems: 'center',
   } as SxProps<Theme>,
 
   statusBadge: {

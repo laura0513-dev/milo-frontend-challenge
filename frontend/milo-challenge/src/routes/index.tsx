@@ -8,6 +8,7 @@ import { ROUTES } from '../shared/constants/routes.ts'
 
 //@pages
 import Login from '../features/auth/Login.tsx'
+import AdminLogin from '../features/auth/AdminLogin.tsx'
 import DashboardHome from '../features/dashboard/DashboardHome.tsx'
 import Orders from '../features/orders/Orders.tsx'
 import Clients from '../features/clients/Clients.tsx'
@@ -21,6 +22,7 @@ export const AppRoutes: React.FC = () => {
   return (
     <Routes>
       <Route path={ROUTES.LOGIN} element={<Login />} />
+      <Route path={ROUTES.LOGIN_ADMIN} element={<AdminLogin />} />
       {isAuthenticated ? (
         <>
           <Route

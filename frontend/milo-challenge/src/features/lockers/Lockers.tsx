@@ -1,8 +1,8 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useAuth } from '../auth/AuthContext.tsx'
 import { usePageLoading } from '../../shared/hooks/usePageLoading.ts'
-import { LoadingState, ActionMenu } from '../../shared/components/ui/index.ts'
-import { MOCK_LOCKERS, ASSETS } from '../../shared/data/mockData.ts'
+import { LoadingState, ActionMenu, ErrorState } from '../../shared/components/ui/index.ts'
+import { ASSETS } from '../../shared/data/mockData.ts'
 import { Locker } from '../../shared/types.ts'
 import { LocationOn, Inventory2, Add, Settings, Edit, Delete } from '@mui/icons-material'
 import { LockerFormModal } from './components/LockerFormModal.tsx'
@@ -21,36 +21,100 @@ import {
 } from '@mui/material'
 
 const Lockers = () => {
-  const { user } = useAuth()
+  const { user, token } = useAuth()
   const isLoading = usePageLoading()
+  const [lockers, setLockers] = useState<Locker[]>([])
+  const [isLoadingLockers, setIsLoadingLockers] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [openModal, setOpenModal] = useState(false)
   const [isEditMode, setIsEditMode] = useState(false)
   const [lockerToEdit, setLockerToEdit] = useState<Locker | null>(null)
   const [openDeleteModal, setOpenDeleteModal] = useState(false)
   const [lockerToDelete, setLockerToDelete] = useState<Locker | null>(null)
 
-  const handleCreateLocker = () => {
-    console.log(isEditMode ? 'Actualizar locker' : 'Crear nuevo locker')
+  useEffect(() => {
+    const loadLockers = async () => {
+      if (!token) {
+        setIsLoadingLockers(false)
+        return
+      }
+
+      setError(null)
+      try {
+        const fetchedLockers = await lockerService.getAllLockers(token)
+        setLockers(fetchedLockers)
+      } catch (error) {
+        console.error('Error cargando lockers:', error)
+        setError('Algo salió mal, intenta de nuevo más tarde')
+        setLockers([])
+      } finally {
+        setIsLoadingLockers(false)
+      }
+    }
+
+    loadLockers()
+  }, [token])
+
+  const handleCloseModal = () => {
     setOpenModal(false)
     setIsEditMode(false)
     setLockerToEdit(null)
   }
 
   const handleEditLocker = async (lockerId: string) => {
+    if (!token) return
     try {
-      const locker = await lockerService.getLockerById(lockerId)
+      const locker = await lockerService.getLockerById(Number(lockerId), token)
+      if (!locker) {
+        setError('Algo salió mal, intenta de nuevo más tarde')
+        return
+      }
       setLockerToEdit(locker)
       setIsEditMode(true)
       setOpenModal(true)
     } catch (error) {
       console.error('Error al obtener locker para editar:', error)
+      setError('Algo salió mal, intenta de nuevo más tarde')
     }
   }
 
-  const handleCloseModal = () => {
-    setOpenModal(false)
-    setIsEditMode(false)
-    setLockerToEdit(null)
+  const handleCreateLocker = async (data: any) => {
+    if (!token || !user) return
+    
+    try {
+      if (isEditMode && lockerToEdit) {
+        // Editar locker existente
+        const updatedLocker = await lockerService.updateLocker(Number(lockerToEdit.id), data, token)
+        if (updatedLocker) {
+          // Actualizar el locker en la lista
+          setLockers(lockers.map(l => l.id === updatedLocker.id ? updatedLocker : l))
+          setOpenModal(false)
+          setIsEditMode(false)
+          setLockerToEdit(null)
+        } else {
+          setError('Algo salió mal, intenta de nuevo más tarde')
+        }
+      } else {
+        // Crear nuevo locker - agregar created_by
+        const lockerData = {
+          ...data,
+          created_by: parseInt(user.id)
+        }
+        const newLocker = await lockerService.createLocker(lockerData, token)
+        if (newLocker) {
+          // Agregar el nuevo locker a la lista
+          setLockers([...lockers, newLocker])
+          setOpenModal(false)
+          setIsEditMode(false)
+          setLockerToEdit(null)
+        } else {
+          setError('Algo salió mal, intenta de nuevo más tarde')
+        }
+      }
+    } catch (error) {
+      console.error('Error creando/editando locker:', error)
+      setError('Algo salió mal, intenta de nuevo más tarde')
+    }
   }
 
   const handleOpenDeleteModal = (locker: Locker) => {
@@ -59,13 +123,20 @@ const Lockers = () => {
   }
 
   const handleConfirmDelete = async () => {
-    if (lockerToDelete) {
+    if (lockerToDelete && token) {
       try {
-        console.log('Eliminando locker:', lockerToDelete.id)
-        setOpenDeleteModal(false)
-        setLockerToDelete(null)
+        const result = await lockerService.deleteLocker(Number(lockerToDelete.id), token)
+        if (result) {
+          // Eliminar el locker de la lista localmente
+          setLockers(lockers.filter(l => l.id !== lockerToDelete.id))
+          setOpenDeleteModal(false)
+          setLockerToDelete(null)
+        } else {
+          setError('Algo salió mal, intenta de nuevo más tarde')
+        }
       } catch (error) {
         console.error('Error al eliminar el locker:', error)
+        setError('Algo salió mal, intenta de nuevo más tarde')
       }
     }
   }
@@ -75,10 +146,29 @@ const Lockers = () => {
     setLockerToDelete(null)
   }
 
+  const handleRetry = async () => {
+    if (!token) return
+    setIsLoadingLockers(true)
+    setError(null)
+    try {
+      const fetchedLockers = await lockerService.getAllLockers(token)
+      setLockers(fetchedLockers)
+    } catch (error) {
+      console.error('Error cargando lockers:', error)
+      setError('Algo salió mal, intenta de nuevo más tarde')
+    } finally {
+      setIsLoadingLockers(false)
+    }
+  }
+
   if (!user) return null
 
-  if (isLoading) {
+  if (isLoading || isLoadingLockers) {
     return <LoadingState message="Cargando lockers..." />
+  }
+
+  if (error) {
+    return <ErrorState message={error} onRetry={handleRetry} fullHeight />
   }
 
   return (
@@ -97,8 +187,9 @@ const Lockers = () => {
       </Box>
 
       <Grid container spacing={lockersStyles.grid.spacing}>
-        {MOCK_LOCKERS.map((locker) => (
-          <Grid item xs={12} sm={6} lg={4} key={locker.id}>
+        {lockers.map((locker) => (
+          // @ts-ignore - MUI Grid type issue
+          <Grid item xs={12} sm={6} lg={4} key={String(locker.id)} sx={lockersStyles.gridItem}>
             <Card sx={lockersStyles.card}>
                <Box sx={lockersStyles.cardMediaContainer}>
                  <CardMedia
@@ -109,21 +200,25 @@ const Lockers = () => {
                  />
                  <Box sx={lockersStyles.statusBadgeContainer}>
                    <Chip 
-                      label={locker.status === 'available' ? 'Libre' : locker.status === 'occupied' ? 'Ocupado' : 'Mtto.'}
-                      color={locker.status === 'available' ? 'success' : locker.status === 'occupied' ? 'error' : 'default'}
+                      label={locker.is_active !== false ? 'Activo' : 'Inactivo'}
+                      color={locker.is_active !== false ? 'success' : 'default'}
                       size="small"
                       sx={lockersStyles.statusBadge}
                    />
                  </Box>
                </Box>
               
-              <CardContent>
+              <CardContent sx={lockersStyles.cardContent}>
                 <Box sx={lockersStyles.cardHeaderContainer}>
-                  <Box>
-                    <Typography variant="h6" fontWeight="bold">{locker.code}</Typography>
+                  <Box sx={lockersStyles.cardTitleContainer}>
+                    <Typography variant="h6" sx={lockersStyles.cardTitle}>
+                      {locker.name}
+                    </Typography>
                     <Box sx={lockersStyles.locationContainer}>
                       <LocationOn sx={lockersStyles.locationIcon} />
-                      <Typography variant="body2">{locker.location}</Typography>
+                      <Typography variant="body2" sx={lockersStyles.locationText}>
+                        {locker.address}
+                      </Typography>
                     </Box>
                   </Box>
                   <Box sx={lockersStyles.iconBox}>
@@ -133,9 +228,10 @@ const Lockers = () => {
                 
                 <Box sx={lockersStyles.cardFooter}>
                   <Chip 
-                    label={`Capacidad: ${locker.capacity === 'small' ? 'Pequeña' : locker.capacity === 'medium' ? 'Mediana' : 'Grande'}`}
+                    label={`Lat: ${Number(locker.latitude).toFixed(4)} | Lng: ${Number(locker.longitude).toFixed(4)}`}
                     variant="outlined"
                     size="small"
+                    sx={lockersStyles.coordinatesChip}
                   />
                   
                   {user.role === 'admin' && (
@@ -146,7 +242,7 @@ const Lockers = () => {
                          {
                            label: 'Editar',
                            icon: Edit,
-                           onClick: () => handleEditLocker(locker.id),
+                           onClick: () => handleEditLocker(String(locker.id)),
                            color: 'primary'
                          },
                          {
