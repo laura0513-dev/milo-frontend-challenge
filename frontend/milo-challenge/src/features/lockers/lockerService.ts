@@ -3,7 +3,7 @@
  * Frontend client para consumir endpoints de Lockers
  */
 
-import type { Locker, LockerNearby, CreateLockerRequest, UpdateLockerRequest, ApiError } from '../../shared/types.ts'
+import type { Locker, LockerNearby, CreateLockerRequest, UpdateLockerRequest } from '../../shared/types.ts'
 
 const API_BASE_URL = 'http://localhost:3000/api'
 
