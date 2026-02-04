@@ -21,7 +21,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     if (isInitialized && isAuthenticated && requiredRoles && user && !requiredRoles.includes(user.role)) {
       navigate('/dashboard', { replace: true })
     }
-  }, []) // Solo ejecutar una vez al montar el componente
+  }, [isInitialized, isAuthenticated, requiredRoles, user, navigate]) // Agregar todas las dependencias
 
   // Si aún se está inicializando (la primera vez), mostrar loading
   if (!isInitialized) {

@@ -11,6 +11,7 @@ import {
   Alert,
 } from '@mui/material'
 import { Lock } from '@mui/icons-material'
+import { codeVerificationModalStyles } from './styles/CodeVerificationModal.styles.ts'
 
 interface CodeVerificationModalProps {
   open: boolean
@@ -61,16 +62,16 @@ export const CodeVerificationModal: React.FC<CodeVerificationModalProps> = ({
   }
 
   return (
-    <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
-      <DialogTitle>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+    <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth aria-labelledby="verification-title" aria-describedby="verification-description">
+      <DialogTitle id="verification-title">
+        <Box sx={codeVerificationModalStyles.titleContainer}>
           <Lock fontSize="small" />
           {title}
         </Box>
       </DialogTitle>
       <DialogContent>
-        <Box sx={{ pt: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
-          <Typography variant="body2" color="text.secondary">
+        <Box sx={codeVerificationModalStyles.contentContainer}>
+          <Typography variant="body2" color="text.secondary" id="verification-description">
             {description}
           </Typography>
 
@@ -84,14 +85,10 @@ export const CodeVerificationModal: React.FC<CodeVerificationModalProps> = ({
             onChange={handleChange}
             onKeyPress={handleKeyPress}
             inputProps={{ maxLength: 6 }}
-            sx={{
-              '& input': {
-                textAlign: 'center',
-                letterSpacing: '0.5em',
-                fontSize: '1.5rem',
-                fontWeight: 'bold',
-              },
-            }}
+            sx={codeVerificationModalStyles.codeInput}
+            aria-label="Ingrese el código de verificación de 6 dígitos"
+            aria-required="true"
+            aria-invalid={!!(localError || errorMessage)}
           />
 
           {(localError || errorMessage) && (
@@ -106,13 +103,14 @@ export const CodeVerificationModal: React.FC<CodeVerificationModalProps> = ({
         </Box>
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleClose} disabled={isLoading}>
+        <Button onClick={handleClose} disabled={isLoading} aria-label="Cancelar verificación">
           Cancelar
         </Button>
         <Button
           onClick={handleVerify}
           variant="contained"
           disabled={code.length !== 6 || isLoading}
+          aria-label="Verificar código ingresado"
         >
           Verificar
         </Button>

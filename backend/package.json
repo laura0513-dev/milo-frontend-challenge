@@ -1,0 +1,29 @@
+{
+  "name": "milo-challenge",
+  "version": "1.0.0",
+  "description": "API de domicilios a través de lockers",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "test": "node --test src/tests/**/*.test.js",
+    "test:db": "node src/tests/database.test.js",
+    "test:crud": "node src/tests/crud.test.js",
+    "test:lockers": "node src/tests/test-lockers-endpoint.js",
+    "cleanup": "node src/tests/cleanup.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.6",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.3",
+    "pg": "^8.10.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  }
+}

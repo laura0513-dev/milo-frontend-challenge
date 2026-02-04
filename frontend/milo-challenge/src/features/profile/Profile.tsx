@@ -1,7 +1,5 @@
 import React from 'react'
 import { useAuth } from '../auth/AuthContext.tsx'
-import { usePageLoading } from '../../shared/hooks/usePageLoading.ts'
-import { LoadingState } from '../../shared/components/ui/index.ts'
 import { CameraAlt, Email, Phone, LocationOn, Save } from '@mui/icons-material'
 import { 
   Box, 
@@ -18,13 +16,8 @@ import { profileStyles } from './Profile.styles.ts'
 
 const Profile = () => {
   const { user } = useAuth()
-  const isLoading = usePageLoading()
 
   if (!user) return null
-
-  if (isLoading) {
-    return <LoadingState message="Cargando perfil..." />
-  }
 
   return (
     <Box sx={profileStyles.container}>
@@ -42,23 +35,26 @@ const Profile = () => {
                  alt="Profile" 
                  sx={profileStyles.avatar}
                />
-               <IconButton sx={profileStyles.cameraButton}>
+               <IconButton sx={profileStyles.cameraButton} aria-label="Cambiar foto de perfil">
                  <CameraAlt sx={profileStyles.cameraIcon} />
                </IconButton>
             </Box>
           </Box>
 
-          <form>
+          <form aria-label="Formulario de perfil de usuario">
              <Grid container spacing={3}>
+                {/* @ts-ignore - MUI Grid type issue */}
                 <Grid item xs={12} md={6}>
                    <TextField
                      fullWidth
                      label="Nombre Completo"
                      defaultValue={user.name}
                      variant="outlined"
+                     aria-label="Ingrese su nombre completo"
                    />
                 </Grid>
                 
+                {/* @ts-ignore - MUI Grid type issue */}
                 <Grid item xs={12} md={6}>
                    <TextField
                      fullWidth
@@ -73,9 +69,12 @@ const Profile = () => {
                        ),
                      }}
                      variant="filled"
+                     aria-label="Correo electrónico (solo lectura)"
+                     aria-readonly="true"
                    />
                 </Grid>
 
+                {/* @ts-ignore - MUI Grid type issue */}
                 <Grid item xs={12} md={6}>
                    <TextField
                      fullWidth
@@ -89,9 +88,11 @@ const Profile = () => {
                          </InputAdornment>
                        ),
                      }}
+                     aria-label="Ingrese su número de teléfono"
                    />
                 </Grid>
 
+                {/* @ts-ignore - MUI Grid type issue */}
                 <Grid item xs={12} md={6}>
                    <TextField
                      fullWidth
@@ -105,6 +106,7 @@ const Profile = () => {
                          </InputAdornment>
                        ),
                      }}
+                     aria-label="Ingrese su dirección principal"
                    />
                 </Grid>
              </Grid>
@@ -114,6 +116,7 @@ const Profile = () => {
                   variant="contained" 
                   startIcon={<Save />}
                   sx={profileStyles.saveButton}
+                  aria-label="Guardar cambios en el perfil"
                 >
                   Guardar Cambios
                 </Button>

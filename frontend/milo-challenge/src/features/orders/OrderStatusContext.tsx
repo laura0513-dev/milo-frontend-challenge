@@ -27,7 +27,6 @@ export const OrderStatusProvider = ({ children }: { children: ReactNode }) => {
       try {
         const fetchedStatuses = await statusService.getOrderStatuses(token)
         setStatuses(fetchedStatuses)
-        // Opcional: guardar en localStorage para persistencia
         localStorage.setItem('orderStatuses', JSON.stringify(fetchedStatuses))
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : 'Error cargando estados'
@@ -50,7 +49,7 @@ export const OrderStatusProvider = ({ children }: { children: ReactNode }) => {
     } else {
       loadStatuses()
     }
-  }, [token]) // Solo depende del token, no de statuses
+  }, [token, statuses])
 
   const value: OrderStatusContextType = {
     statuses,

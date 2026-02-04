@@ -10,8 +10,8 @@ import {
   Chip,
   Stack,
 } from '@mui/material'
-import { LockerStatus } from '../../../shared/constants/enums.ts'
 import { Locker } from '../../../shared/types.ts'
+import { newLockerFormStyles } from './NewLockerForm.styles.ts'
 
 interface NewLockerFormProps {
   onSubmit?: (data: any) => void
@@ -20,10 +20,9 @@ interface NewLockerFormProps {
 
 export const NewLockerForm: React.FC<NewLockerFormProps> = ({ onSubmit, initialData }) => {
   const [formData, setFormData] = React.useState({
-    code: initialData?.code || '',
-    location: initialData?.location || '',
-    capacity: initialData?.capacity || '',
-    status: initialData?.status || LockerStatus.AVAILABLE,
+    name: initialData?.name || '',
+    address: initialData?.address || '',
+    is_active: initialData?.is_active !== undefined ? initialData.is_active : true,
   })
 
   const handleChange = (field: string) => (event: any) => {
@@ -31,79 +30,64 @@ export const NewLockerForm: React.FC<NewLockerFormProps> = ({ onSubmit, initialD
   }
 
   return (
-    <Box component="form" sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
-      <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+    <Box component="form" sx={newLockerFormStyles.form} aria-label="Formulario para crear un nuevo locker">
+      <Typography variant="body2" color="text.secondary" sx={newLockerFormStyles.description}>
         Complete los datos del nuevo locker
       </Typography>
 
       <TextField
-        label="Código del Locker"
-        placeholder="L001"
-        value={formData.code}
-        onChange={handleChange('code')}
+        label="Nombre del Locker"
+        placeholder="Locker Centro Comercial"
+        value={formData.name}
+        onChange={handleChange('name')}
         fullWidth
         required
-        helperText="Código único identificador"
+        helperText="Nombre identificador del locker"
+        aria-label="Ingrese el nombre del locker"
+        aria-required="true"
       />
 
       <TextField
-        label="Ubicación"
-        placeholder="Centro Comercial Plaza Norte"
-        value={formData.location}
-        onChange={handleChange('location')}
+        label="Dirección"
+        placeholder="Av. Principal 123, Centro Comercial Plaza Norte"
+        value={formData.address}
+        onChange={handleChange('address')}
         fullWidth
         required
-        helperText="Dirección o punto de referencia"
+        helperText="Dirección completa del locker"
+        aria-label="Ingrese la dirección completa del locker"
+        aria-required="true"
       />
 
       <FormControl fullWidth required>
-        <InputLabel id="capacity-label">Capacidad</InputLabel>
+        <InputLabel id="is-active-label">Estado</InputLabel>
         <Select
-          labelId="capacity-label"
-          label="Capacidad"
-          value={formData.capacity}
-          onChange={handleChange('capacity')}
-        >
-          <MenuItem value="small">Pequeña</MenuItem>
-          <MenuItem value="medium">Mediana</MenuItem>
-          <MenuItem value="large">Grande</MenuItem>
-        </Select>
-      </FormControl>
-
-      <FormControl fullWidth required>
-        <InputLabel id="status-label">Estado</InputLabel>
-        <Select
-          labelId="status-label"
+          labelId="is-active-label"
           label="Estado"
-          value={formData.status}
-          onChange={handleChange('status')}
+          value={formData.is_active}
+          onChange={handleChange('is_active')}
+          aria-label="Seleccione el estado del locker"
+          aria-required="true"
         >
-          <MenuItem value={LockerStatus.AVAILABLE}>Disponible</MenuItem>
-          <MenuItem value={LockerStatus.OCCUPIED}>Ocupado</MenuItem>
-          <MenuItem value={LockerStatus.MAINTENANCE}>Mantenimiento</MenuItem>
+          <MenuItem value={true as any}>Activo</MenuItem>
+          <MenuItem value={false as any}>Inactivo</MenuItem>
         </Select>
       </FormControl>
 
-      <Box sx={{ mt: 1 }}>
-        <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1 }}>
+      <Box sx={newLockerFormStyles.previewContainer}>
+        <Typography variant="caption" color="text.secondary" sx={newLockerFormStyles.previewLabel}>
           Vista previa:
         </Typography>
         <Stack direction="row" spacing={1} flexWrap="wrap">
           <Chip 
-            label={formData.code || 'Sin código'} 
+            label={formData.name || 'Sin nombre'} 
             size="small" 
             variant="outlined" 
           />
           <Chip 
-            label={formData.capacity ? `Capacidad: ${formData.capacity === 'small' ? 'Pequeña' : formData.capacity === 'medium' ? 'Mediana' : 'Grande'}` : 'Sin capacidad'} 
+            label={formData.is_active ? 'Activo' : 'Inactivo'} 
             size="small" 
-            color="primary" 
-            variant="outlined" 
-          />
-          <Chip 
-            label={formData.status === LockerStatus.AVAILABLE ? 'Disponible' : formData.status === LockerStatus.OCCUPIED ? 'Ocupado' : 'Mantenimiento'} 
-            size="small" 
-            color={formData.status === LockerStatus.AVAILABLE ? 'success' : formData.status === LockerStatus.OCCUPIED ? 'error' : 'default'}
+            color={formData.is_active ? 'success' : 'default'}
           />
         </Stack>
       </Box>

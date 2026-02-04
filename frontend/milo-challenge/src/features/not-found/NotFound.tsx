@@ -25,6 +25,7 @@ const NotFound: React.FC = () => {
           variant="contained"
           onClick={() => navigate(ROUTES.DASHBOARD)}
           sx={notFoundStyles.button}
+          aria-label="Volver a la página principal del dashboard"
         >
           Volver al Dashboard
         </Button>

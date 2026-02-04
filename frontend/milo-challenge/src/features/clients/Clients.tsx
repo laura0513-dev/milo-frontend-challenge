@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react'
 import { useAuth } from '../auth/AuthContext.tsx'
-import { usePageLoading } from '../../shared/hooks/usePageLoading.ts'
 import { LoadingState, ErrorState } from '../../shared/components/ui/index.ts'
 import { User } from '../../shared/types.ts'
 import { clientService } from './clientService.ts'
@@ -33,7 +32,6 @@ const getRoleLabel = (role: string): string => {
 
 const Clients = () => {
   const { token, user } = useAuth()
-  const isLoading = usePageLoading()
   const [users, setUsers] = useState<User[]>([])
   const [isLoadingUsers, setIsLoadingUsers] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -90,7 +88,7 @@ const Clients = () => {
     }
   }
   
-  if (isLoading || isLoadingUsers) {
+  if (isLoadingUsers) {
     return <LoadingState message="Cargando usuarios..." />
   }
 

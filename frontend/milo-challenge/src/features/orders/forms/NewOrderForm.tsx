@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useCallback } from 'react'
 import {
   TextField,
   Select,
@@ -86,16 +86,16 @@ export const NewOrderForm = React.forwardRef<NewOrderFormRef, NewOrderFormProps>
     }
   }
 
-  const isValid = () => {
+  const isValid = useCallback(() => {
     return !!(formData.user_id && formData.locker_id)
-  }
+  }, [formData.user_id, formData.locker_id])
 
   // Notificar cambios en la validez del formulario
   React.useEffect(() => {
     if (onValidityChange) {
       onValidityChange(isValid())
     }
-  }, [formData.user_id, formData.locker_id, onValidityChange])
+  }, [onValidityChange, isValid])
 
   const handleSubmit = () => {
     if (onSubmit && isValid()) {
@@ -114,7 +114,7 @@ export const NewOrderForm = React.forwardRef<NewOrderFormRef, NewOrderFormProps>
   }))
 
   return (
-    <Box component="form" sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
+    <Box component="form" sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }} aria-label="Formulario para crear una nueva orden">
       <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
         Complete los datos de la nueva orden
       </Typography>
@@ -127,6 +127,8 @@ export const NewOrderForm = React.forwardRef<NewOrderFormRef, NewOrderFormProps>
             label="Cliente"
             value={formData.user_id}
             onChange={handleChange('user_id')}
+            aria-label="Seleccione el cliente para la orden"
+            aria-required="true"
           >
             <MenuItem value="" disabled>Seleccione un cliente</MenuItem>
             {/* TODO: Cargar clientes desde el backend */}
@@ -151,6 +153,8 @@ export const NewOrderForm = React.forwardRef<NewOrderFormRef, NewOrderFormProps>
             required
             inputProps={{ step: 'any' }}
             helperText="Ej: 4.7110 (Bogotá)"
+            aria-label="Ingrese la latitud de la ubicación de entrega"
+            aria-required="true"
           />
           <TextField
             label="Longitud"
@@ -162,6 +166,8 @@ export const NewOrderForm = React.forwardRef<NewOrderFormRef, NewOrderFormProps>
             required
             inputProps={{ step: 'any' }}
             helperText="Ej: -74.0721 (Bogotá)"
+            aria-label="Ingrese la longitud de la ubicación de entrega"
+            aria-required="true"
           />
         </Stack>
 
@@ -172,6 +178,7 @@ export const NewOrderForm = React.forwardRef<NewOrderFormRef, NewOrderFormProps>
           onClick={handleSearchNearbyLockers}
           disabled={!formData.latitude || !formData.longitude || isLoadingLockers}
           sx={{ mb: 2 }}
+          aria-label={isLoadingLockers ? 'Buscando lockers cercanos a su ubicación' : 'Buscar lockers disponibles cercanos a la ubicación ingresada'}
         >
           {isLoadingLockers ? 'Buscando lockers...' : 'Buscar lockers cercanos'}
         </Button>
@@ -184,6 +191,8 @@ export const NewOrderForm = React.forwardRef<NewOrderFormRef, NewOrderFormProps>
           label="Locker de entrega"
           value={formData.locker_id}
           onChange={handleChange('locker_id')}
+          aria-label="Seleccione el locker de entrega para la orden"
+          aria-required="true"
         >
           {nearbyLockers.length === 0 && hasSearched && !isLoadingLockers ? (
             <MenuItem value="" disabled>

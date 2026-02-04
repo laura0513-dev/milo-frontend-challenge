@@ -101,7 +101,7 @@ const Login: React.FC = () => {
               </Alert>
             )}
 
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} aria-label="Formulario de inicio de sesión">
               <Box sx={loginStyles.formBox}>
                 <TextField
                   fullWidth
@@ -120,6 +120,9 @@ const Login: React.FC = () => {
                   }
                   error={!!formErrors.email}
                   helperText={formErrors.email}
+                  aria-label="Ingrese su correo electrónico"
+                  aria-required="true"
+                  aria-invalid={!!formErrors.email}
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
@@ -144,6 +147,9 @@ const Login: React.FC = () => {
                   placeholder="Ingresa tu contraseña"
                   error={!!formErrors.password}
                   helperText={formErrors.password}
+                  aria-label="Ingrese su contraseña"
+                  aria-required="true"
+                  aria-invalid={!!formErrors.password}
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
@@ -156,6 +162,7 @@ const Login: React.FC = () => {
                           onClick={() => setShowPassword(!showPassword)}
                           edge="end"
                           disabled={isLoading}
+                          aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
                         >
                           {showPassword ? <VisibilityOff /> : <Visibility />}
                         </IconButton>
@@ -172,6 +179,7 @@ const Login: React.FC = () => {
                     fontWeight="medium"
                     gutterBottom
                     color="text.secondary"
+                    id="user-role-label"
                   >
                     Tipo de Usuario
                   </Typography>
@@ -185,11 +193,13 @@ const Login: React.FC = () => {
                     color="primary"
                     size="small"
                     disabled={isLoading}
+                    aria-labelledby="user-role-label"
+                    aria-label="Seleccione su tipo de usuario"
                   >
-                    <ToggleButton value={UserRole.CLIENT} sx={loginStyles.toggleButton}>
+                    <ToggleButton value={UserRole.CLIENT} sx={loginStyles.toggleButton} aria-label="Iniciar sesión como cliente">
                       Cliente
                     </ToggleButton>
-                    <ToggleButton value={UserRole.DELIVERY} sx={loginStyles.toggleButton}>
+                    <ToggleButton value={UserRole.DELIVERY} sx={loginStyles.toggleButton} aria-label="Iniciar sesión como repartidor">
                       Repartidor
                     </ToggleButton>
                   </ToggleButtonGroup>
@@ -203,6 +213,7 @@ const Login: React.FC = () => {
                   endIcon={<ArrowForward />}
                   sx={loginStyles.submitButton}
                   disabled={isLoading}
+                  aria-label={isLoading ? 'Iniciando sesión, por favor espere' : 'Iniciar sesión en la aplicación'}
                 >
                   {isLoading ? 'Ingresando...' : 'Ingresar'}
                 </Button>

@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react'
 import { CustomModal, ModalButton } from '../../../shared/components/ui/index.ts'
 import { Locker } from '../../../shared/types.ts'
 import { Save } from '@mui/icons-material'
-import { useAuth } from '../../auth/AuthContext.tsx'
 import {
   TextField,
   Box,
@@ -26,7 +25,6 @@ export const LockerFormModal: React.FC<LockerFormModalProps> = ({
   onClose,
   onSubmit,
 }) => {
-  const { user } = useAuth()
   const [formData, setFormData] = useState<{
     name: string
     address: string
@@ -111,6 +109,8 @@ export const LockerFormModal: React.FC<LockerFormModalProps> = ({
           fullWidth
           required
           helperText="Nombre descriptivo del locker"
+          aria-label="Ingrese el nombre del locker"
+          aria-required="true"
         />
 
         <TextField
@@ -121,6 +121,8 @@ export const LockerFormModal: React.FC<LockerFormModalProps> = ({
           fullWidth
           required
           helperText="Dirección completa del locker"
+          aria-label="Ingrese la dirección completa del locker"
+          aria-required="true"
         />
 
         <TextField
@@ -133,6 +135,8 @@ export const LockerFormModal: React.FC<LockerFormModalProps> = ({
           required
           helperText="Coordenada de latitud (-90 a 90)"
           inputProps={{ step: 'any', min: -90, max: 90 }}
+          aria-label="Ingrese la latitud del locker"
+          aria-required="true"
         />
 
         <TextField
@@ -145,6 +149,8 @@ export const LockerFormModal: React.FC<LockerFormModalProps> = ({
           required
           helperText="Coordenada de longitud (-180 a 180)"
           inputProps={{ step: 'any', min: -180, max: 180 }}
+          aria-label="Ingrese la longitud del locker"
+          aria-required="true"
         />
 
         <FormControlLabel
@@ -153,6 +159,7 @@ export const LockerFormModal: React.FC<LockerFormModalProps> = ({
               checked={formData.is_active}
               onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
               color="primary"
+              aria-label="Activar o desactivar el locker"
             />
           }
           label="Locker activo"

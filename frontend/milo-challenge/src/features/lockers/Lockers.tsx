@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useAuth } from '../auth/AuthContext.tsx'
-import { usePageLoading } from '../../shared/hooks/usePageLoading.ts'
 import { LoadingState, ActionMenu, ErrorState } from '../../shared/components/ui/index.ts'
-import { ASSETS } from '../../shared/data/mockData.ts'
+import { ASSETS } from '../../shared/constants/assets.ts'
 import { Locker } from '../../shared/types.ts'
 import { LocationOn, Inventory2, Add, Settings, Edit, Delete } from '@mui/icons-material'
 import { LockerFormModal } from './components/LockerFormModal.tsx'
@@ -22,7 +21,6 @@ import {
 
 const Lockers = () => {
   const { user, token } = useAuth()
-  const isLoading = usePageLoading()
   const [lockers, setLockers] = useState<Locker[]>([])
   const [isLoadingLockers, setIsLoadingLockers] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -163,7 +161,7 @@ const Lockers = () => {
 
   if (!user) return null
 
-  if (isLoading || isLoadingLockers) {
+  if (isLoadingLockers) {
     return <LoadingState message="Cargando lockers..." />
   }
 

@@ -15,23 +15,18 @@ import {
   ListItemIcon,
   ListItemText,
   Avatar,
-  useMediaQuery,
-  useTheme,
 } from "@mui/material"
 import { getNavLinksByRole } from "../constants/navigation.ts"
+import { layoutStyles } from './styles/Layout.styles.ts'
 
 interface LayoutProps {
   children: React.ReactNode
 }
 
-const drawerWidth = 280
-
 export const Layout: React.FC<LayoutProps> = ({ children }) => {
   const { user, logout } = useAuth()
   const location = useLocation()
   const navigate = useNavigate()
-  const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"))
   const [mobileOpen, setMobileOpen] = useState(false)
 
   // Filtra los links según el rol del usuario de forma eficiente
@@ -47,54 +42,22 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
   }
 
   const drawerContent = (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        height: "100%",
-        p: 2,
-      }}
-    >
-      <Box
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          gap: 2,
-          mb: 4,
-          px: 2,
-        }}
-      >
-        <Box
-          sx={{
-            width: 40,
-            height: 40,
-            bgcolor: "primary.main",
-            borderRadius: 2,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            color: "white",
-            fontWeight: "bold",
-            fontSize: "1.2rem",
-          }}
-        >
+    <Box sx={layoutStyles.drawerContainer}>
+      <Box sx={layoutStyles.drawerHeader}>
+        <Box sx={layoutStyles.logo}>
           R
         </Box>
-        <Typography
-          variant="h6"
-          fontWeight="bold"
-          color="text.primary"
-        >
+        <Typography variant="h6" sx={layoutStyles.title}>
           RappiClone
         </Typography>
       </Box>
 
-      <List sx={{ flexGrow: 1 }}>
+      <List sx={layoutStyles.list}>
         {links.map((link) => {
           const Icon = link.icon
           const isActive = location.pathname === link.path
           return (
-            <ListItem key={link.id} disablePadding sx={{ mb: 1 }}>
+            <ListItem key={link.id} disablePadding sx={layoutStyles.listItem}>
               <ListItemButton
                 onClick={() => {
                   navigate(link.path)
@@ -103,31 +66,14 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
                     setMobileOpen(false)
                   }
                 }}
-                sx={{
-                  borderRadius: 3,
-                  textDecoration: 'none',
-                  cursor: 'pointer',
-                  bgcolor: isActive ? "primary.main" : "transparent",
-                  color: isActive ? "white" : "text.primary",
-                  fontWeight: isActive ? 700 : 500,
-                  transition: 'all 0.2s ease',
-                  "&:hover": {
-                    bgcolor: isActive ? "primary.main" : "action.hover",
-                    color: isActive ? "white" : "text.primary",
-                  },
-                }}
+                sx={layoutStyles.listItemButton(isActive)}
               >
-                <ListItemIcon
-                  sx={{
-                    minWidth: 40,
-                    color: isActive ? "white" : "text.secondary",
-                  }}
-                >
+                <ListItemIcon sx={layoutStyles.listItemIcon(isActive)}>
                   <Icon />
                 </ListItemIcon>
                 <ListItemText
                   primary={link.label}
-                  primaryTypographyProps={{ fontWeight: isActive ? 700 : 500 }}
+                  primaryTypographyProps={layoutStyles.listItemText(isActive)}
                 />
               </ListItemButton>
             </ListItem>
@@ -135,60 +81,29 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
         })}
       </List>
 
-      <Box sx={{ pt: 2, borderTop: 1, borderColor: "divider" }}>
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            gap: 2,
-            mb: 2,
-            px: 1,
-          }}
-        >
+      <Box sx={layoutStyles.userSection}>
+        <Box sx={layoutStyles.userInfo}>
           <Avatar
             src={user.avatarUrl}
             alt={user.name}
-            sx={{
-              width: 40,
-              height: 40,
-              border: "2px solid",
-              borderColor: "primary.light",
-            }}
+            sx={layoutStyles.avatar}
           />
-          <Box sx={{ overflow: "hidden" }}>
-            <Typography
-              variant="subtitle2"
-              noWrap
-              fontWeight="bold"
-            >
+          <Box sx={layoutStyles.userTextContainer}>
+            <Typography variant="subtitle2" noWrap sx={layoutStyles.userName}>
               {user.name}
             </Typography>
-            <Typography
-              variant="caption"
-              color="text.secondary"
-              sx={{ textTransform: "capitalize" }}
-            >
+            <Typography variant="caption" color="text.secondary" sx={layoutStyles.userRole}>
               {user.role}
             </Typography>
           </Box>
         </Box>
-        <ListItemButton
-          onClick={logout}
-          sx={{
-            borderRadius: 3,
-            color: "error.main",
-            "&:hover": {
-              bgcolor: "error.light",
-              color: "error.contrastText",
-            },
-          }}
-        >
-          <ListItemIcon sx={{ minWidth: 40, color: "inherit" }}>
+        <ListItemButton onClick={logout} sx={layoutStyles.logoutButton}>
+          <ListItemIcon sx={layoutStyles.logoutIcon}>
             <Logout />
           </ListItemIcon>
           <ListItemText
             primary="Cerrar Sesión"
-            primaryTypographyProps={{ fontWeight: 600 }}
+            primaryTypographyProps={layoutStyles.logoutText}
           />
         </ListItemButton>
       </Box>
@@ -196,59 +111,32 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
   )
 
   return (
-    <Box sx={{ display: "flex" }}>
-      <AppBar
-        position="fixed"
-        sx={{
-          width: { md: `calc(100% - ${drawerWidth}px)` },
-          ml: { md: `${drawerWidth}px` },
-          display: { md: "none" },
-          bgcolor: "background.paper",
-          color: "text.primary",
-          boxShadow: 1,
-        }}
-      >
+    <Box sx={layoutStyles.container}>
+      <AppBar position="fixed" sx={layoutStyles.appBar}>
         <Toolbar>
           <IconButton
             color="inherit"
             aria-label="open drawer"
             edge="start"
             onClick={handleDrawerToggle}
-            sx={{ mr: 2, display: { md: "none" } }}
+            sx={layoutStyles.appBarMenuButton}
           >
             <MenuIcon />
           </IconButton>
-          <Typography
-            variant="h6"
-            noWrap
-            component="div"
-            sx={{ flexGrow: 1, fontWeight: "bold" }}
-          >
+          <Typography variant="h6" noWrap component="div" sx={layoutStyles.appBarTitle}>
             RappiClone
           </Typography>
         </Toolbar>
       </AppBar>
 
-      <Box
-        component="nav"
-        sx={{
-          width: { md: drawerWidth },
-          flexShrink: { md: 0 },
-        }}
-      >
+      <Box component="nav" sx={layoutStyles.nav}>
         {/* Mobile Drawer */}
         <Drawer
           variant="temporary"
           open={mobileOpen}
           onClose={handleDrawerToggle}
           ModalProps={{ keepMounted: true }}
-          sx={{
-            display: { xs: "block", md: "none" },
-            "& .MuiDrawer-paper": {
-              boxSizing: "border-box",
-              width: drawerWidth,
-            },
-          }}
+          sx={layoutStyles.mobileDrawer}
         >
           {drawerContent}
         </Drawer>
@@ -256,33 +144,15 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
         {/* Desktop Drawer */}
         <Drawer
           variant="permanent"
-          sx={{
-            display: { xs: "none", md: "block" },
-            "& .MuiDrawer-paper": {
-              boxSizing: "border-box",
-              width: drawerWidth,
-              borderRight: "1px solid",
-              borderColor: "divider",
-            },
-          }}
+          sx={layoutStyles.desktopDrawer}
           open
         >
           {drawerContent}
         </Drawer>
       </Box>
 
-      <Box
-        component="main"
-        sx={{
-          flexGrow: 1,
-          p: 3,
-          width: { md: `calc(100% - ${drawerWidth}px)` },
-          mt: { xs: 7, md: 0 },
-          minHeight: "100vh",
-          bgcolor: "background.default",
-        }}
-      >
-        <Box sx={{ maxWidth: "lg", mx: "auto" }}>
+      <Box component="main" sx={layoutStyles.main}>
+        <Box sx={layoutStyles.contentContainer}>
           {children}
         </Box>
       </Box>

@@ -48,7 +48,7 @@ export const ActionMenu: React.FC<ActionMenuProps> = ({
         onClick={handleClick}
         size={size}
         color={iconColor}
-        aria-label="más opciones"
+        aria-label="Abrir menú de acciones"
         aria-controls={open ? 'action-menu' : undefined}
         aria-haspopup="true"
         aria-expanded={open ? 'true' : undefined}
@@ -79,6 +79,7 @@ export const ActionMenu: React.FC<ActionMenuProps> = ({
               key={index}
               onClick={(e) => handleAction(e, action)}
               disabled={action.disabled}
+              aria-label={action.label}
             >
               <ListItemIcon>
                 <IconComponent 

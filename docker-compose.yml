@@ -1,0 +1,40 @@
+services:
+  postgresql: 
+    container_name: postgresql
+    image: postgres:latest
+    ports: 
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: "new_admin_user"
+      POSTGRES_PASSWORD: 1234
+      POSTGRES_DB: rappi_lockersDB
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U new_admin_user -d rappi_lockersDB"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  api: 
+    container_name: api_milo
+    build: backend/.
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: "postgresql://new_admin_user:1234@postgresql:5432/rappi_lockersDB"
+      DB_HOST: "postgresql"
+      DB_PORT: "5432"
+      DB_USER: "new_admin_user"
+      DB_PASSWORD: "1234"
+      DB_NAME: "rappi_lockersDB"
+    depends_on: 
+      postgresql:
+        condition: service_healthy
+    command: sh -c "npm run test:crud && npm start"
+  frontend:
+    container_name: frontend_milo
+    build: frontend/milo-challenge/.
+    ports:
+      - "3001:3000"
+    depends_on:
+     - api
+    

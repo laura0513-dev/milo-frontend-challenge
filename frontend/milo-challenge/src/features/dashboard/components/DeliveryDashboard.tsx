@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Box, Grid, Typography, Paper, Button, Chip, Divider, Stack } from '@mui/material'
+import { Box, Typography, Paper, Button, Chip, Divider, Stack } from '@mui/material'
 import { 
   LocalShipping, 
   Assignment, 
@@ -8,7 +8,6 @@ import {
   Add,
   LocationOn,
   AccessTime,
-  DeliveryDining,
   Inventory,
   Person
 } from '@mui/icons-material'
@@ -25,44 +24,17 @@ interface DeliveryDashboardProps {
   token?: string | null
 }
 
-const StatusBadge = ({ status }: { status: string | undefined }) => {
-  const styles: Record<string, { color: 'default' | 'primary' | 'secondary' | 'error' | 'info' | 'success' | 'warning', label: string }> = {
-    'En preparaci\u00f3n': { color: 'info', label: 'En preparaci\u00f3n' },
-    'En camino': { color: 'warning', label: 'En camino' },
-    'En el locker': { color: 'secondary', label: 'En el locker' },
-    'Entregada': { color: 'success', label: 'Entregada' },
-    'Cancelada': { color: 'error', label: 'Cancelada' },
-  }
-
-  const config = status ? styles[status] || styles['En preparaci\u00f3n'] : styles['En preparaci\u00f3n']
-
-  return (
-    <Chip 
-      label={config.label} 
-      color={config.color} 
-      size="small" 
-      sx={{ fontWeight: 'bold' }} 
-    />
-  )
-}
-
 export const DeliveryDashboard: React.FC<DeliveryDashboardProps> = ({ userId, userName, token }) => {
   const navigate = useNavigate()
   const { orders: myDeliveries, refreshOrders } = useOrders()
   const { statuses } = useOrderStatuses()
   const [availableOrders, setAvailableOrders] = useState<Order[]>([])
-  const [isLoading, setIsLoading] = useState(true)
   const [codeModalOpen, setCodeModalOpen] = useState(false)
   const [codeError, setCodeError] = useState('')
   const [pendingOrderUpdate, setPendingOrderUpdate] = useState<{ orderId: number; newStatusId: number } | null>(null)
 
-  useEffect(() => {
-    loadOrders()
-  }, [token, userId])
-
-  const loadOrders = async () => {
+  const loadOrders = useCallback(async () => {
     if (!token) {
-      setIsLoading(false)
       return
     }
 
@@ -76,10 +48,12 @@ export const DeliveryDashboard: React.FC<DeliveryDashboardProps> = ({ userId, us
     } catch (error) {
       console.error('Error cargando órdenes:', error)
       setAvailableOrders([])
-    } finally {
-      setIsLoading(false)
     }
-  }
+  }, [token, refreshOrders])
+
+  useEffect(() => {
+    loadOrders()
+  }, [loadOrders])
 
   const handleAssignOrder = async (orderId: number) => {
     if (!token) return
@@ -152,7 +126,7 @@ export const DeliveryDashboard: React.FC<DeliveryDashboardProps> = ({ userId, us
           <Typography variant="h4" fontWeight="bold" color="text.primary">
             ¡Hola, {userName.split(' ')[0]}! 🚴
           </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+          <Typography variant="body2" color="text.secondary" sx={deliveryDashboardStyles.panelSubtitle}>
             Panel de Repartidor
           </Typography>
         </Box>
@@ -181,7 +155,7 @@ export const DeliveryDashboard: React.FC<DeliveryDashboardProps> = ({ userId, us
       {/* Mis Entregas Asignadas - Mostrar órdenes "En preparación" o "En camino" */}
       {statuses && myDeliveries.filter(order => order.status === statuses.PREPARING || order.status === statuses.IN_TRANSIT).length > 0 && (
         <Paper sx={deliveryDashboardStyles.sectionPaper}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+          <Box sx={deliveryDashboardStyles.sectionHeader}>
             <Typography variant="h6" fontWeight="bold">
               Mis Entregas
             </Typography>
@@ -213,7 +187,7 @@ export const DeliveryDashboard: React.FC<DeliveryDashboardProps> = ({ userId, us
                     <Typography variant="subtitle1" fontWeight="bold">
                       Orden #{order.id}
                     </Typography>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 0.5 }}>
+                    <Box sx={deliveryDashboardStyles.orderTimeRow}>
                       <AccessTime sx={{ fontSize: 16, color: 'text.secondary' }} />
                       <Typography variant="caption" color="text.secondary">
                         {order.created_at ? new Date(order.created_at).toLocaleString() : 'N/A'}
@@ -225,9 +199,9 @@ export const DeliveryDashboard: React.FC<DeliveryDashboardProps> = ({ userId, us
 
                 <Divider sx={{ my: 1.5 }} />
 
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                <Box sx={deliveryDashboardStyles.orderInfoContainer}>
                   {order.usuario && (
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Box sx={deliveryDashboardStyles.orderInfoRow}>
                       <Person sx={{ fontSize: 18, color: 'text.secondary' }} />
                       <Typography variant="body2" color="text.primary">
                         {order.usuario}
@@ -235,7 +209,7 @@ export const DeliveryDashboard: React.FC<DeliveryDashboardProps> = ({ userId, us
                     </Box>
                   )}
                   {order.locker_address && (
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Box sx={deliveryDashboardStyles.orderInfoRow}>
                       <LocationOn sx={{ fontSize: 18, color: 'text.secondary' }} />
                       <Typography variant="body2" color="text.primary">
                         {order.locker_address}
@@ -245,7 +219,7 @@ export const DeliveryDashboard: React.FC<DeliveryDashboardProps> = ({ userId, us
                 </Box>
 
                 <Box sx={deliveryDashboardStyles.orderFooter}>
-                  <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap', gap: 1 }}>
+                  <Stack direction="row" spacing={1} sx={deliveryDashboardStyles.orderActionsStack}>
                     {statuses && order.status === statuses.IN_TRANSIT && (
                       <Button
                         variant="contained"
@@ -287,7 +261,7 @@ export const DeliveryDashboard: React.FC<DeliveryDashboardProps> = ({ userId, us
 
       {/* Órdenes Disponibles para Tomar */}
       <Paper sx={deliveryDashboardStyles.sectionPaper}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+        <Box sx={deliveryDashboardStyles.sectionHeader}>
           <Typography variant="h6" fontWeight="bold">
             Órdenes Disponibles (En Preparación)
           </Typography>
@@ -321,7 +295,7 @@ export const DeliveryDashboard: React.FC<DeliveryDashboardProps> = ({ userId, us
                     <Typography variant="subtitle1" fontWeight="bold">
                       Orden #{order.id}
                     </Typography>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 0.5 }}>
+                    <Box sx={deliveryDashboardStyles.orderTimeRow}>
                       <AccessTime sx={{ fontSize: 16, color: 'text.secondary' }} />
                       <Typography variant="caption" color="text.secondary">
                         {order.created_at ? new Date(order.created_at).toLocaleString() : 'N/A'}
@@ -333,9 +307,9 @@ export const DeliveryDashboard: React.FC<DeliveryDashboardProps> = ({ userId, us
 
                 <Divider sx={{ my: 1.5 }} />
 
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                <Box sx={deliveryDashboardStyles.orderInfoContainer}>
                   {order.usuario && (
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Box sx={deliveryDashboardStyles.orderInfoRow}>
                       <Person sx={{ fontSize: 18, color: 'text.secondary' }} />
                       <Typography variant="body2" color="text.primary">
                         Cliente: {order.usuario}
@@ -343,7 +317,7 @@ export const DeliveryDashboard: React.FC<DeliveryDashboardProps> = ({ userId, us
                     </Box>
                   )}
                   {order.locker_address && (
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Box sx={deliveryDashboardStyles.orderInfoRow}>
                       <LocationOn sx={{ fontSize: 18, color: 'text.secondary' }} />
                       <Typography variant="body2" color="text.primary">
                         Destino: {order.locker_address}

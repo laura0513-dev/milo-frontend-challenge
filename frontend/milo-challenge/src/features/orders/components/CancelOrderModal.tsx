@@ -51,7 +51,7 @@ export const CancelOrderModal: React.FC<CancelOrderModalProps> = ({
           ¿Está seguro que desea cancelar esta orden?
         </Typography>
         <Typography variant="body2" color="text.secondary">
-          Esta acción no se puede deshacer. La orden #{orderId?.toUpperCase()} será cancelada permanentemente.
+          Esta acción no se puede deshacer. La orden #{orderId} será cancelada permanentemente.
         </Typography>
       </Box>
     </CustomModal>

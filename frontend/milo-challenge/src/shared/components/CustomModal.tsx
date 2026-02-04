@@ -10,6 +10,7 @@ import {
   Divider,
 } from '@mui/material'
 import { Close } from '@mui/icons-material'
+import { customModalStyles } from './styles/CustomModal.styles.ts'
 
 export interface ModalButton {
   label: string
@@ -46,35 +47,31 @@ export const CustomModal: React.FC<CustomModalProps> = ({
       maxWidth={maxWidth}
       fullWidth={fullWidth}
       PaperProps={{
-        sx: {
-          borderRadius: 2,
-        },
+        sx: customModalStyles.paper,
       }}
+      aria-labelledby="custom-modal-title"
     >
-      <DialogTitle>
-        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <DialogTitle id="custom-modal-title">
+        <Box sx={customModalStyles.titleContainer}>
           {title}
           <IconButton
-            aria-label="cerrar"
+            aria-label={`Cerrar ${title}`}
             onClick={onClose}
             size="small"
-            sx={{
-              color: 'text.secondary',
-              '&:hover': { bgcolor: 'action.hover' },
-            }}
+            sx={customModalStyles.closeButton}
           >
             <Close />
           </IconButton>
         </Box>
       </DialogTitle>
       <Divider />
-      <DialogContent sx={{ mt: 2 }}>
+      <DialogContent sx={customModalStyles.content}>
         {children}
       </DialogContent>
       {buttons.length > 0 && (
         <>
           <Divider />
-          <DialogActions sx={{ p: 2, gap: 1 }}>
+          <DialogActions sx={customModalStyles.actions}>
             {buttons.map((button, index) => (
               <Button
                 key={index}
@@ -83,6 +80,7 @@ export const CustomModal: React.FC<CustomModalProps> = ({
                 color={button.color || 'primary'}
                 disabled={button.disabled}
                 startIcon={button.startIcon}
+                aria-label={button.label}
               >
                 {button.label}
               </Button>

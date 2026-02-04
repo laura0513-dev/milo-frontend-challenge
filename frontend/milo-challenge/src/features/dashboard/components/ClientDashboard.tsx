@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Add, Inventory2 } from '@mui/icons-material'
+import { Inventory2 } from '@mui/icons-material'
 import { ROUTES } from '../../../shared/constants/routes.ts'
 import { useOrderStatuses } from '../../../shared/hooks/index.ts'
 import {
@@ -8,7 +8,6 @@ import {
   Grid,
   Typography,
   Paper,
-  IconButton,
   Card,
   CardMedia,
   Chip,
@@ -16,11 +15,11 @@ import {
   Button,
   Stack,
 } from '@mui/material'
-import { ASSETS } from '../../../shared/data/mockData.ts'
 import { Order } from '../../../shared/types.ts'
 import { CodeVerificationModal } from '../../../shared/components/CodeVerificationModal.tsx'
 import { LockerCodeDisplay } from '../../../shared/components/LockerCodeDisplay.tsx'
 import { orderService } from '../../orders/orderService.ts'
+import { ASSETS } from '../../../shared/constants/assets.ts'
 import { clientDashboardStyles } from './styles/ClientDashboard.styles.ts'
 
 interface ClientDashboardProps {
@@ -44,7 +43,6 @@ export const ClientDashboard: React.FC<ClientDashboardProps> = ({ userName, user
   const navigate = useNavigate()
   const { statuses } = useOrderStatuses()
   const [orders, setOrders] = useState<Order[]>([])
-  const [isLoading, setIsLoading] = useState(true)
   const [codeModalOpen, setCodeModalOpen] = useState(false)
   const [codeError, setCodeError] = useState('')
   const [pendingOrderId, setPendingOrderId] = useState<number | null>(null)
@@ -53,7 +51,6 @@ export const ClientDashboard: React.FC<ClientDashboardProps> = ({ userName, user
   useEffect(() => {
     const loadOrders = async () => {
       if (!token || !userId) {
-        setIsLoading(false)
         return
       }
 
@@ -64,8 +61,6 @@ export const ClientDashboard: React.FC<ClientDashboardProps> = ({ userName, user
       } catch (error) {
         console.error('Error cargando órdenes:', error)
         setOrders([])
-      } finally {
-        setIsLoading(false)
       }
     }
 

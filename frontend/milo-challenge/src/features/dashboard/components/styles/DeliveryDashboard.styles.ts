@@ -79,4 +79,39 @@ export const deliveryDashboardStyles = {
     color: 'text.disabled',
     mb: 2,
   } as SxProps<Theme>,
+
+  sectionHeader: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    mb: 3,
+  } as SxProps<Theme>,
+
+  orderInfoContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 1,
+  } as SxProps<Theme>,
+
+  orderInfoRow: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 1,
+  } as SxProps<Theme>,
+
+  orderTimeRow: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 1,
+    mt: 0.5,
+  } as SxProps<Theme>,
+
+  orderActionsStack: {
+    flexWrap: 'wrap',
+    gap: 1,
+  } as SxProps<Theme>,
+
+  panelSubtitle: {
+    mt: 0.5,
+  } as SxProps<Theme>,
 }

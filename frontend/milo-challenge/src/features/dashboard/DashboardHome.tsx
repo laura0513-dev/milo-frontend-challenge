@@ -1,9 +1,9 @@
 import React, { useMemo } from 'react'
 import { useAuth } from '../auth/AuthContext.tsx'
-import { useCurrentUser, useAsync, usePageLoading } from '../../shared/hooks/index.ts'
+import { useCurrentUser, useAsync } from '../../shared/hooks/index.ts'
 import { orderService } from '../orders/orderService.ts'
 import { lockerService } from '../lockers/lockerService.ts'
-import { OrderStatus, UserRole } from '../../shared/constants/enums.ts'
+import { UserRole } from '../../shared/constants/enums.ts'
 import { LoadingState, ErrorState } from '../../shared/components/ui/index.ts'
 import { AdminDashboard } from './components/AdminDashboard.tsx'
 import { ClientDashboard } from './components/ClientDashboard.tsx'
@@ -12,7 +12,6 @@ import { DeliveryDashboard } from './components/DeliveryDashboard.tsx'
 const DashboardHome: React.FC = () => {
   const { user, token } = useAuth()
   const { isAdmin, isClient } = useCurrentUser()
-  const isPageLoading = usePageLoading()
 
   // Cargar datos de órdenes solo para admin
   const { data: orders, loading: ordersLoading, error: ordersError } = useAsync(
@@ -35,10 +34,6 @@ const DashboardHome: React.FC = () => {
     }),
     [orders, lockers],
   )
-
-  if (isPageLoading) {
-    return <LoadingState message="Cargando dashboard..." />
-  }
 
   if (!user || !token) return null
 

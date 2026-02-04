@@ -39,21 +39,14 @@ class ClientService {
       const data = await response.json()
 
       if (!response.ok) {
-        throw {
-          message: data.error || `Error ${response.status}`,
-          status: response.status,
-          endpoint,
-        }
+        const error = new Error(data.error || `Error ${response.status}`)
+        throw error
       }
 
       return data
     } catch (error) {
       if (error instanceof TypeError) {
-        throw {
-          message: 'Error de conexión. Verifica que el servidor esté disponible.',
-          status: 0,
-          endpoint,
-        }
+        throw new Error('Error de conexión. Verifica que el servidor esté disponible.')
       }
       throw error
     }

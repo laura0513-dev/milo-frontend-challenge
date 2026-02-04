@@ -7,7 +7,6 @@ import { Alert, CircularProgress } from '@mui/material'
 
 interface OrderFormModalProps {
   open: boolean
-  isEditMode: boolean
   isAdmin: boolean
   userId?: number
   onClose: () => void
@@ -18,7 +17,6 @@ interface OrderFormModalProps {
 
 export const OrderFormModal: React.FC<OrderFormModalProps> = ({
   open,
-  isEditMode,
   isAdmin,
   userId,
   onClose,
@@ -43,7 +41,7 @@ export const OrderFormModal: React.FC<OrderFormModalProps> = ({
       disabled: isLoading,
     },
     {
-      label: isLoading ? 'Creando...' : (isEditMode ? 'Actualizar Orden' : 'Crear Orden'),
+      label: isLoading ? 'Creando...' : 'Crear Orden',
       onClick: handleFormSubmit,
       variant: 'contained',
       color: 'primary',
@@ -56,7 +54,7 @@ export const OrderFormModal: React.FC<OrderFormModalProps> = ({
     <CustomModal
       open={open}
       onClose={onClose}
-      title={isEditMode ? 'Editar Orden' : 'Crear Nueva Orden'}
+      title='Crear Nueva Orden'
       buttons={modalButtons}
       maxWidth="sm"
     >

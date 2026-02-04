@@ -1,6 +1,7 @@
 import React from 'react'
 import { Box, Paper, Typography } from '@mui/material'
 import { Lock } from '@mui/icons-material'
+import { lockerCodeDisplayStyles } from './styles/LockerCodeDisplay.styles.ts'
 
 interface LockerCodeDisplayProps {
   code: string
@@ -22,17 +23,10 @@ export const LockerCodeDisplay: React.FC<LockerCodeDisplayProps> = ({
   const isUrgent = expiresIn < 10
 
   return (
-    <Paper 
-      sx={{ 
-        p: 2, 
-        bgcolor: 'warning.main',
-        color: 'white',
-        mt: 2
-      }}
-    >
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-        <Lock sx={{ fontSize: 20 }} />
-        <Typography variant="subtitle2" fontWeight="bold" sx={{ color: 'white' }}>
+    <Paper sx={lockerCodeDisplayStyles.paper}>
+      <Box sx={lockerCodeDisplayStyles.header}>
+        <Lock sx={lockerCodeDisplayStyles.icon} />
+        <Typography variant="subtitle2" fontWeight="bold" sx={lockerCodeDisplayStyles.title}>
           {title}
         </Typography>
       </Box>
@@ -41,11 +35,7 @@ export const LockerCodeDisplay: React.FC<LockerCodeDisplayProps> = ({
         variant="h4" 
         fontWeight="bold" 
         textAlign="center" 
-        sx={{ 
-          letterSpacing: 4,
-          color: 'white',
-          my: 1
-        }}
+        sx={lockerCodeDisplayStyles.code}
       >
         {code}
       </Typography>
@@ -54,11 +44,7 @@ export const LockerCodeDisplay: React.FC<LockerCodeDisplayProps> = ({
         variant="caption" 
         textAlign="center" 
         display="block"
-        sx={{ 
-          color: 'white',
-          fontWeight: isUrgent ? 'bold' : 'normal',
-          textDecoration: isUrgent ? 'underline' : 'none'
-        }}
+        sx={lockerCodeDisplayStyles.expirationText(isUrgent)}
       >
         Expira en: {formatTime(expiresIn)}
       </Typography>

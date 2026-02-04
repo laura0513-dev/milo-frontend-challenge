@@ -97,7 +97,7 @@ const AdminLogin: React.FC = () => {
               </Alert>
             )}
 
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} aria-label="Formulario de inicio de sesión administrativo">
               <Box sx={adminLoginStyles.formBox}>
                 <TextField
                   fullWidth
@@ -112,6 +112,9 @@ const AdminLogin: React.FC = () => {
                   placeholder="admin_user"
                   error={!!formErrors.username}
                   helperText={formErrors.username}
+                  aria-label="Ingrese su nombre de usuario administrativo"
+                  aria-required="true"
+                  aria-invalid={!!formErrors.username}
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
@@ -136,6 +139,9 @@ const AdminLogin: React.FC = () => {
                   placeholder="Ingresa tu contraseña"
                   error={!!formErrors.password}
                   helperText={formErrors.password}
+                  aria-label="Ingrese su contraseña de administrador"
+                  aria-required="true"
+                  aria-invalid={!!formErrors.password}
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
@@ -148,6 +154,7 @@ const AdminLogin: React.FC = () => {
                           onClick={() => setShowPassword(!showPassword)}
                           edge="end"
                           disabled={isLoading}
+                          aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
                         >
                           {showPassword ? <VisibilityOff /> : <Visibility />}
                         </IconButton>
@@ -171,6 +178,7 @@ const AdminLogin: React.FC = () => {
                   endIcon={<ArrowForward />}
                   sx={adminLoginStyles.submitButton}
                   disabled={isLoading}
+                  aria-label={isLoading ? 'Verificando credenciales de administrador' : 'Acceder al panel administrativo'}
                 >
                   {isLoading ? 'Verificando...' : 'Acceder'}
                 </Button>
@@ -182,6 +190,7 @@ const AdminLogin: React.FC = () => {
                     color="primary" 
                     fontWeight="medium"
                     sx={adminLoginStyles.link}
+                    aria-label="Volver al formulario de inicio de sesión normal"
                   >
                     ← Volver al login normal
                   </Link>

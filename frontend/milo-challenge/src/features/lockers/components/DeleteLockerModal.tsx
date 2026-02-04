@@ -62,10 +62,10 @@ export const DeleteLockerModal: React.FC<DeleteLockerModalProps> = ({
         {locker && (
           <Box sx={styles.lockerInfo}>
             <Typography variant="body2" fontWeight="bold">
-              {locker.code}
+              {locker.name}
             </Typography>
             <Typography variant="caption" color="text.secondary">
-              {locker.location}
+              {locker.address}
             </Typography>
           </Box>
         )}

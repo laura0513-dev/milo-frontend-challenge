@@ -1,4 +1,4 @@
-import { Dashboard, Inventory, People, Inventory2, Person, ShoppingBag } from '@mui/icons-material'
+import { Dashboard, Inventory, People, Inventory2, Person } from '@mui/icons-material'
 import type { SvgIconProps } from '@mui/material'
 import { UserRole } from './enums.ts'
 import { ROUTES } from './routes.ts'
