@@ -55,8 +55,6 @@ Sistema de gestión de órdenes y lockers inteligentes inspirado en servicios de
 
 La aplicación está construida siguiendo una arquitectura modular donde cada funcionalidad (feature) es independiente y auto-contenida. Esta decisión arquitectónica se tomó por las siguientes razones:
 
-#### ¿Por qué Feature-Based Architecture?
-
 1. **Escalabilidad**: Cada feature puede crecer de manera independiente sin afectar otras partes del sistema
 2. **Mantenibilidad**: Facilita la localización y modificación de código relacionado
 3. **Reusabilidad**: Componentes y lógica pueden ser compartidos a través de la carpeta `shared/`
