@@ -32,7 +32,6 @@ Sistema de gestión de órdenes y lockers inteligentes inspirado en servicios de
 - Sistema de códigos de verificación con expiración (60 segundos)
 - Búsqueda de lockers por geolocalización (latitud/longitud)
 - Dashboards personalizados por rol
-- Sistema de notificaciones y estados en tiempo real
 - Accesibilidad completa con etiquetas ARIA
 - Diseño responsive con Material-UI
 
